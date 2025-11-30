@@ -1,0 +1,52 @@
+<!--bootstrap navbar-->
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <div class="container">
+    <a class="navbar-brand" href="/">CareFreelancer</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="/gigs">Browse Gigs</a>
+        </li>
+
+        <% if (user) { %>
+          <% if (user.role === 'freelancer' || user.role === 'both') { %>
+            <li class="nav-item">
+              <a class="nav-link" href="/gigs/create">Post a Gig</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/orders/freelancer">Orders Received</a>
+            </li>
+          <% } %>
+
+          <% if (user.role === 'client' || user.role === 'both') { %>
+            <li class="nav-item">
+              <a class="nav-link" href="/orders/client">My Orders</a>
+            </li>
+          <% } %>
+
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+              <%= user.username %>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="/profile">Profile</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="/auth/logout">Logout</a></li>
+            </ul>
+          </li>
+        <% } else { %>
+          <li class="nav-item">
+            <a class="nav-link" href="/auth/login">Login</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/auth/register">Register</a>
+          </li>
+        <% } %>
+      </ul>
+    </div>
+  </div>
+</nav>

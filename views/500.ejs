@@ -1,0 +1,20 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar') %>
+
+<main class="container mt-5">
+  <div class="text-center">
+    <h1 class="display-1">500</h1>
+    <p class="fs-3">Server Error</p>
+    <p class="lead">Something went wrong on our end.</p>
+    <a href="/" class="btn btn-primary">Go Home</a>
+
+    <% if (error && error.stack) { %>
+      <div class="mt-4 text-start">
+        <h4>Error Details (Development Mode):</h4>
+        <pre class="bg-light p-3 rounded"><%= error.stack %></pre>
+      </div>
+    <% } %>
+  </div>
+</main>
+
+<%- include('partials/footer') %>

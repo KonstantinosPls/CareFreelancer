@@ -1,0 +1,54 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar') %>
+
+<main class="container mt-5">
+  <div class="jumbotron bg-light p-5 rounded">
+    <h1 class="display-4">Welcome to CareFreelancer</h1>
+    <p class="lead">Connect with talented freelancers or offer your services to clients worldwide.</p>
+    <hr class="my-4">
+    <p>Browse thousands of gigs or start selling your skills today.</p>
+    <div class="mt-4">
+      <% if (!user) { %>
+        <a class="btn btn-primary btn-lg me-2" href="/auth/register" role="button">Get Started</a>
+        <a class="btn btn-outline-primary btn-lg" href="/gigs" role="button">Browse Gigs</a>
+      <% } else { %>
+        <a class="btn btn-primary btn-lg me-2" href="/gigs" role="button">Browse Gigs</a>
+        <% if (user.role === 'freelancer' || user.role === 'both') { %>
+          <a class="btn btn-success btn-lg" href="/gigs/create" role="button">Post a Gig</a>
+        <% } %>
+      <% } %>
+    </div>
+  </div>
+
+  <section class="mt-5">
+    <h2 class="mb-4">How It Works</h2>
+    <div class="row">
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">1. Sign Up</h5>
+            <p class="card-text">Create your account as a freelancer, client, or both.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">2. Browse or Post</h5>
+            <p class="card-text">Browse available services or post your own gigs.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">3. Get to Work</h5>
+            <p class="card-text">Place orders and collaborate on exciting projects.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include('partials/footer') %>
