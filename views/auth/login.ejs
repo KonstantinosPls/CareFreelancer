@@ -1,0 +1,121 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<main class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-5">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0">Login</h4>
+        </div>
+        <div class="card-body">
+
+          <!-- show an error message from the server if the login fails -->
+          <% if (typeof error !== 'undefined' && error) { %>
+            <div class="alert alert-danger">
+              <%= error %>
+            </div>
+          <% } %>
+
+          <!-- display success message -->
+          <% if (typeof success !== 'undefined' && success) { %>
+            <div class="alert alert-success">
+              <%= success %>
+            </div>
+          <% } %>
+
+          <!-- Login form -->
+          <form id="loginForm" action="/auth/login" method="POST" novalidate>
+
+            <!-- email field for login -->
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input
+                type="email"
+                class="form-control"
+                id="email"
+                name="email"
+                value="<%= typeof formData !== 'undefined' ? formData.email || '' : '' %>"
+                required
+              >
+              <div class="invalid-feedback">Please enter your email</div>
+            </div>
+
+            <!-- password field -->
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                name="password"
+                required
+              >
+              <div class="invalid-feedback">Please enter your password</div>
+            </div>
+
+            <!-- Remember me checkbox that will increase the session duration -->
+            <div class="mb-3 form-check">
+              <input
+                type="checkbox"
+                class="form-check-input"
+                id="rememberMe"
+                name="rememberMe"
+              >
+              <label class="form-check-label" for="rememberMe">
+                Remember me for 30 days
+              </label>
+            </div>
+
+            <!-- Submit button -->
+            <button type="submit" class="btn btn-primary w-100">Login</button>
+          </form>
+
+          <!-- Link to registration for new users -->
+          <div class="text-center mt-3">
+            <span>Don't have an account?</span>
+            <a href="/auth/register">Register here</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Client side validation -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('loginForm');
+
+  form.addEventListener('submit', function(event) {
+    let isValid = true;
+
+    // Reset validation states
+    form.querySelectorAll('.form-control').forEach(input => {
+      input.classList.remove('is-invalid', 'is-valid');
+    });
+
+    // Validate that the email is not empty and has a valid format
+    const email = document.getElementById('email');
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email.value || !emailPattern.test(email.value)) {
+      email.classList.add('is-invalid');
+      isValid = false;
+    }
+
+    // Validate that the password is not empty
+    const password = document.getElementById('password');
+    if (!password.value) {
+      password.classList.add('is-invalid');
+      isValid = false;
+    }
+
+    // Stop submission unless everything is valid
+    if (!isValid) {
+      event.preventDefault();
+    }
+  });
+});
+</script>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,147 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<main class="container mt-5">
+  <div class="row">
+    <!-- Profile sidebar -->
+    <div class="col-md-4">
+      <div class="card shadow">
+        <div class="card-body text-center">
+          <!-- Profile photo -->
+          <!-- If the user doesnt have a profile photo, show the default placeholder -->
+          <% if (profileUser.profileImage) { %>
+            <img
+              src="<%= profileUser.profileImage %>"
+              alt="Profile picture"
+              class="rounded-circle mb-3"
+              style="width: 150px; height: 150px; object-fit: cover;"
+            >
+          <% } else { %>
+            <!-- Default photo using the first letter of the username -->
+            <div
+              class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3"
+              style="width: 150px; height: 150px; font-size: 48px;"
+            >
+              <%= profileUser.username.charAt(0).toUpperCase() %>
+            </div>
+          <% } %>
+
+          <h4><%= profileUser.username %></h4>
+
+          <!-- Role badge -->
+          <% if (profileUser.role === 'freelancer') { %>
+            <span class="badge bg-success">Freelancer</span>
+          <% } else if (profileUser.role === 'client') { %>
+            <span class="badge bg-info">Client</span>
+          <% } else { %>
+            <span class="badge bg-primary">Freelancer & Client</span>
+          <% } %>
+
+          <p class="text-muted mt-2">
+            Member since <%= profileUser.createdAt.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }) %>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile details -->
+    <div class="col-md-8">
+      <!-- Success/Error messages -->
+      <!-- Checking for success query parameter from profile update -->
+      <% if (typeof success !== 'undefined' && success) { %>
+        <div class="alert alert-success alert-dismissible fade show">
+          <%= success %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      <% } %>
+
+      <!-- Check URL query parameter for success message -->
+      <script>
+        // Show success message if redirected after profile update
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('success') === 'true') {
+          const alertDiv = document.createElement('div');
+          alertDiv.className = 'alert alert-success alert-dismissible fade show';
+          alertDiv.innerHTML = 'Profile updated successfully! <button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
+          document.querySelector('.col-md-8').prepend(alertDiv);
+          // Clean URL
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+      </script>
+
+      <% if (typeof error !== 'undefined' && error) { %>
+        <div class="alert alert-danger alert-dismissible fade show">
+          <%= error %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      <% } %>
+
+      <div class="card shadow">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">Profile Information</h5>
+          <!-- Only show the edit button if the usser is viewing their own profile -->
+          <% if (user && user._id.toString() === profileUser._id.toString()) { %>
+            <a href="/profile/edit" class="btn btn-sm btn-outline-primary">Edit Profile</a>
+          <% } %>
+        </div>
+        <div class="card-body">
+          <!-- Email -->
+          <div class="mb-3">
+            <label class="form-label text-muted">Email</label>
+            <p><%= profileUser.email %></p>
+          </div>
+
+          <!-- Bio -->
+          <div class="mb-3">
+            <label class="form-label text-muted">Bio</label>
+            <p><%= profileUser.bio || 'No bio provided yet.' %></p>
+          </div>
+
+          <!-- Skills(only for freelancers) -->
+          <% if (profileUser.role === 'freelancer' || profileUser.role === 'both') { %>
+            <div class="mb-3">
+              <label class="form-label text-muted">Skills</label>
+              <div>
+                <% if (profileUser.skills && profileUser.skills.length > 0) { %>
+                  <% profileUser.skills.forEach(skill => { %>
+                    <span class="badge bg-secondary me-1"><%= skill %></span>
+                  <% }); %>
+                <% } else { %>
+                  <p>No skills listed yet.</p>
+                <% } %>
+              </div>
+            </div>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Quick links section -->
+      <% if (user && user._id.toString() === profileUser._id.toString()) { %>
+        <div class="card shadow mt-4">
+          <div class="card-header">
+            <h5 class="mb-0">Quick Links</h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <% if (user.role === 'freelancer' || user.role === 'both') { %>
+                <div class="col-md-6 mb-2">
+                  <a href="/gigs/my-gigs" class="btn btn-outline-primary w-100">My Gigs</a>
+                </div>
+                <div class="col-md-6 mb-2">
+                  <a href="/orders/freelancer" class="btn btn-outline-primary w-100">Orders Received</a>
+                </div>
+              <% } %>
+              <% if (user.role === 'client' || user.role === 'both') { %>
+                <div class="col-md-6 mb-2">
+                  <a href="/orders/client" class="btn btn-outline-primary w-100">My Orders</a>
+                </div>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

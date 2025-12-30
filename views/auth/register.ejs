@@ -1,0 +1,250 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<main class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0">Create Account</h4>
+        </div>
+        <div class="card-body">
+
+          <!-- Error messages from the server side validation -->
+          
+          <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+            <div class="alert alert-danger">
+              <ul class="mb-0">
+                <% errors.forEach(error => { %>
+                  <li><%= error.msg %></li>
+                <% }); %>
+              </ul>
+            </div>
+          <% } %>
+
+          <!-- Registration form -->
+          <!-- action="/auth/register" tells the browser where to send the data -->
+          <!-- method="POST" means we're sending data to create something new -->
+          <form id="registerForm" action="/auth/register" method="POST" novalidate>
+
+            <!-- Username field -->
+            <div class="mb-3">
+              <label for="username" class="form-label">Username</label>
+              <input
+                type="text"
+                class="form-control"
+                id="username"
+                name="username"
+                value="<%= typeof formData !== 'undefined' ? formData.username || '' : '' %>"
+                required
+                minlength="3"
+                maxlength="30"
+              >
+              <!-- This will show client-side validation errors -->
+              <div class="invalid-feedback">Username must be 3-30 characters</div>
+            </div>
+
+            <!-- Email field -->
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input
+                type="email"
+                class="form-control"
+                id="email"
+                name="email"
+                value="<%= typeof formData !== 'undefined' ? formData.email || '' : '' %>"
+                required
+              >
+              <div class="invalid-feedback">Please enter a valid email address</div>
+            </div>
+
+            <!-- Password field -->
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                name="password"
+                required
+                minlength="8"
+              >
+              <div class="invalid-feedback">Password must be at least 8 characters</div>
+              <!-- Password strength indicator -->
+              <small id="passwordStrength" class="form-text"></small>
+            </div>
+
+            <!-- Confirm password field -->
+            <div class="mb-3">
+              <label for="confirmPassword" class="form-label">Confirm Password</label>
+              <input
+                type="password"
+                class="form-control"
+                id="confirmPassword"
+                name="confirmPassword"
+                required
+              >
+              <div class="invalid-feedback">Passwords do not match</div>
+            </div>
+
+            <!-- select role using radio buttons -->
+            <div class="mb-3">
+              <label class="form-label">I want to:</label>
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="role"
+                  id="roleClient"
+                  value="client"
+                  <%= typeof formData !== 'undefined' && formData.role === 'client' ? 'checked' : '' %>
+                >
+                <label class="form-check-label" for="roleClient">
+                  Hire freelancers (Client)
+                </label>
+              </div>
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="role"
+                  id="roleFreelancer"
+                  value="freelancer"
+                  <%= typeof formData !== 'undefined' && formData.role === 'freelancer' ? 'checked' : '' %>
+                >
+                <label class="form-check-label" for="roleFreelancer">
+                  Offer my services (Freelancer)
+                </label>
+              </div>
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="role"
+                  id="roleBoth"
+                  value="both"
+                  <%= typeof formData !== 'undefined' && formData.role === 'both' ? 'checked' : (typeof formData === 'undefined' ? 'checked' : '') %>
+                >
+                <label class="form-check-label" for="roleBoth">
+                  Both hire and offer services
+                </label>
+              </div>
+              <div class="invalid-feedback">Please select a role</div>
+            </div>
+
+            <!-- Submit button -->
+            <button type="submit" class="btn btn-primary w-100">Create Account</button>
+          </form>
+
+          <!-- Link to login page for existing users -->
+          <div class="text-center mt-3">
+            <span>Already have an account?</span>
+            <a href="/auth/login">Login here</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Client side validation script which runs before the form is sent tot the server -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('registerForm');
+  const password = document.getElementById('password');
+  const confirmPassword = document.getElementById('confirmPassword');
+  const passwordStrength = document.getElementById('passwordStrength');
+
+  // Password strength checker
+  // This gives users feedback as they type their password
+  password.addEventListener('input', function() {
+    const value = this.value;
+    let strength = 0;
+    let message = '';
+
+    // Check various criteria and add to strength score
+    if (value.length >= 8) strength++;
+    if (value.match(/[a-z]/)) strength++;
+    if (value.match(/[A-Z]/)) strength++;
+    if (value.match(/[0-9]/)) strength++;
+    if (value.match(/[^a-zA-Z0-9]/)) strength++;
+
+    // Display the appropriate message based on user's password score
+    if (value.length === 0) {
+      message = '';
+    } else if (strength < 2) {
+      message = 'Weak password';
+      passwordStrength.className = 'form-text text-danger';
+    } else if (strength < 4) {
+      message = 'Medium password';
+      passwordStrength.className = 'form-text text-warning';
+    } else {
+      message = 'Strong password';
+      passwordStrength.className = 'form-text text-success';
+    }
+
+    passwordStrength.textContent = message;
+  });
+
+  // Form submission handler with validation before being sent to the server
+  form.addEventListener('submit', function(event) {
+    let isValid = true;
+
+    // Reset all previous validation states
+    form.querySelectorAll('.form-control').forEach(input => {
+      input.classList.remove('is-invalid', 'is-valid');
+    });
+
+    // Validate the username (3-30 characters)
+    const username = document.getElementById('username');
+    if (username.value.length < 3 || username.value.length > 30) {
+      username.classList.add('is-invalid');
+      isValid = false;
+    } else {
+      username.classList.add('is-valid');
+    }
+
+    // Validate the email format using a regex pattern
+    const email = document.getElementById('email');
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email.value)) {
+      email.classList.add('is-invalid');
+      isValid = false;
+    } else {
+      email.classList.add('is-valid');
+    }
+
+    // Validate the password length
+    if (password.value.length < 8) {
+      password.classList.add('is-invalid');
+      isValid = false;
+    } else {
+      password.classList.add('is-valid');
+    }
+
+    // Check if passwords match
+    if (password.value !== confirmPassword.value) {
+      confirmPassword.classList.add('is-invalid');
+      isValid = false;
+    } else if (confirmPassword.value.length > 0) {
+      confirmPassword.classList.add('is-valid');
+    }
+
+    // Check if a role is selected
+    const roleSelected = document.querySelector('input[name="role"]:checked');
+    if (!roleSelected) {
+      document.querySelectorAll('input[name="role"]').forEach(r => {
+        r.classList.add('is-invalid');
+      });
+      isValid = false;
+    }
+
+    // Stop the submission if the validation fails
+    if (!isValid) {
+      event.preventDefault();
+    }
+  });
+});
+</script>
+
+<%- include('../partials/footer') %>

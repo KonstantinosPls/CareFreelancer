@@ -1,0 +1,195 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<main class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow">
+        <div class="card-header">
+          <h5 class="mb-0">Edit Profile</h5>
+        </div>
+        <div class="card-body">
+
+          <!-- Display validation errors -->
+          <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+            <div class="alert alert-danger">
+              <ul class="mb-0">
+                <% errors.forEach(error => { %>
+                  <li><%= error.msg %></li>
+                <% }); %>
+              </ul>
+            </div>
+          <% } %>
+
+          <!-- Profile edit form -->
+          <!-- enctype="multipart/form-data" is required for file uploads or files will not be sent to the server correctly -->
+          <form action="/profile/edit" method="POST" enctype="multipart/form-data" id="editProfileForm">
+
+            <!-- Current profile photo preview -->
+            <div class="mb-4 text-center">
+              <label class="form-label d-block">Profile Picture</label>
+              <% if (user.profileImage) { %>
+                <img
+                  id="profilePreview"
+                  src="<%= user.profileImage %>"
+                  alt="Current profile picture"
+                  class="rounded-circle mb-2"
+                  style="width: 120px; height: 120px; object-fit: cover;"
+                >
+              <% } else { %>
+                <div
+                  id="profilePreview"
+                  class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-2"
+                  style="width: 120px; height: 120px; font-size: 36px;"
+                >
+                  <%= user.username.charAt(0).toUpperCase() %>
+                </div>
+              <% } %>
+
+              <!-- File input for new profile photo -->
+              <div class="mt-2">
+                <input
+                  type="file"
+                  class="form-control"
+                  id="profileImage"
+                  name="profileImage"
+                  accept="image/jpeg,image/png,image/jpg"
+                >
+                <small class="form-text text-muted">
+                  Max 2MB. Allowed formats: JPG, JPEG, PNG
+                </small>
+              </div>
+            </div>
+
+            <!-- Username -->
+            <div class="mb-3">
+              <label for="username" class="form-label">Username</label>
+              <input
+                type="text"
+                class="form-control"
+                id="username"
+                value="<%= user.username %>"
+                disabled
+              >
+              <small class="form-text text-muted">Username cannot be changed</small>
+            </div>
+
+            <!-- Email -->
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input
+                type="email"
+                class="form-control"
+                id="email"
+                value="<%= user.email %>"
+                disabled
+              >
+              <small class="form-text text-muted">Contact support to change email</small>
+            </div>
+
+            <!-- Bio field -->
+            <div class="mb-3">
+              <label for="bio" class="form-label">Bio</label>
+              <textarea
+                class="form-control"
+                id="bio"
+                name="bio"
+                rows="4"
+                maxlength="500"
+                placeholder="Tell us about yourself..."
+              ><%= user.bio || '' %></textarea>
+              <small class="form-text text-muted">
+                <span id="bioCount"><%= (user.bio || '').length %></span>/500 characters
+              </small>
+            </div>
+
+            <!-- Skills(only for freelancers) -->
+            <% if (user.role === 'freelancer' || user.role === 'both') { %>
+              <div class="mb-3">
+                <label for="skills" class="form-label">Skills</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="skills"
+                  name="skills"
+                  value="<%= user.skills ? user.skills.join(', ') : '' %>"
+                  placeholder="e.g. JavaScript, Python, Web Design"
+                >
+                <small class="form-text text-muted">
+                  Enter skills separated by commas
+                </small>
+              </div>
+            <% } %>
+
+            <!-- Submit buttons -->
+            <div class="d-flex justify-content-between">
+              <a href="/profile" class="btn btn-outline-secondary">Cancel</a>
+              <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Bio character counter
+  const bio = document.getElementById('bio');
+  const bioCount = document.getElementById('bioCount');
+
+  if (bio && bioCount) {
+    bio.addEventListener('input', function() {
+      bioCount.textContent = this.value.length;
+    });
+  }
+
+  // Profile image preview before the final upload
+  const profileImage = document.getElementById('profileImage');
+  const profilePreview = document.getElementById('profilePreview');
+
+  if (profileImage) {
+    profileImage.addEventListener('change', function(event) {
+      const file = event.target.files[0];
+
+      if (file) {
+        // Validate file size(<=2MB)
+        if (file.size > 2 * 1024 * 1024) {
+          alert('File size must be less than 2MB');
+          this.value = '';
+          return;
+        }
+
+        // Validate file type
+        const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+        if (!validTypes.includes(file.type)) {
+          alert('Only JPG, JPEG, and PNG files are allowed');
+          this.value = '';
+          return;
+        }
+
+        // Create preview using FileReader API that converts the file to data url
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          // If preview is a div(the default profile photo) replace with img
+          if (profilePreview.tagName === 'DIV') {
+            const img = document.createElement('img');
+            img.id = 'profilePreview';
+            img.src = e.target.result;
+            img.alt = 'Profile preview';
+            img.className = 'rounded-circle mb-2';
+            img.style.cssText = 'width: 120px; height: 120px; object-fit: cover;';
+            profilePreview.parentNode.replaceChild(img, profilePreview);
+          } else {
+            profilePreview.src = e.target.result;
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+});
+</script>
+
+<%- include('../partials/footer') %>
