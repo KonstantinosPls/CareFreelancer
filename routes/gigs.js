@@ -5,7 +5,9 @@ const router = express.Router();
 
 //GET/gigs - List all gigs
 router.get('/', (req, res) => {
-  res.send('Gigs listing page not implemented yet');
+  res.render('gigs/list', {
+    title: 'Browse Gigs',
+  });
 });
 
 //GET/gigs/create - Show create gig form
