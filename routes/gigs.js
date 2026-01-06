@@ -12,7 +12,7 @@ router.get('/', (req, res) => {
 
 //GET/gigs/create - Show create gig form
 router.get('/create', (req, res) => {
-  res.send('Create gig form not implemented yet');
+  res.render('gigs/create', { title: 'Create Gig' });
 });
 
 //POST/gigs - Create new gig
