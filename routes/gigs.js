@@ -7,17 +7,26 @@ const router = express.Router();
 router.get('/', (req, res) => {
   res.render('gigs/list', {
     title: 'Browse Gigs',
+     gigs: []
   });
 });
 
 //GET/gigs/create - Show create gig form
 router.get('/create', (req, res) => {
-  res.render('gigs/create', { title: 'Create Gig' });
+  const success = req.session.gigSuccess || false;
+
+  req.session.gigSuccess = false;
+
+  res.render('gigs/create', {
+    title: 'Create Gig',
+    success
+  });
 });
 
 //POST/gigs - Create new gig
 router.post('/', (req, res) => {
-  res.send('Create gig functionality not implemented yet');
+  req.session.gigSuccess = true;
+  res.redirect('/gigs/create');
 });
 
 //GET/gigs/:id - Show gig details
