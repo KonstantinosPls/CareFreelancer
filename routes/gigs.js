@@ -11,6 +11,15 @@ router.get('/', (req, res) => {
   });
 });
 
+// GET /gigs/search - Search results in Phase 4 UI
+router.get('/search', (req, res) => {
+  res.render('gigs/search', {
+    title: 'Search Results',
+    results: [],
+    query: req.query.q || ''
+  });
+});
+
 //GET/gigs/create - Show create gig form
 router.get('/create', (req, res) => {
   const success = req.session.gigSuccess || false;

@@ -1,0 +1,174 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<main class="container mt-5">
+
+  <!-- Page Title -->
+  <h1 class="mb-3">Search Results</h1>
+  <p class="text-muted">
+    Showing results for <strong>"Web"</strong>
+  </p>
+
+  <!-- Results -->
+  <p class="mb-4">
+    <strong>3</strong> results found
+  </p>
+
+  <!--Filtering Phase 4 UI-->
+  <div class="card mb-4">
+  <div class="card-body">
+    <h5 class="mb-3">Filter Results</h5>
+
+    <div class="row">
+      <!-- Category Filter -->
+      <div class="col-md-4">
+        <label class="form-label">Category</label>
+        <select class="form-select">
+            <option selected>All Categories</option>
+            <option>Web Development</option>
+            <option>Graphic Design</option>
+            <option>Writing & Translation</option>
+            <option>Digital Marketing</option>
+            <option>Video & Animation</option>
+        </select>
+      </div>
+
+      <!-- Skills Filter -->
+      <div class="col-md-6">
+        <label class="form-label d-block">Skills</label>
+
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox">
+          <label class="form-check-label">HTML / CSS</label>
+        </div>
+
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox">
+          <label class="form-check-label">JavaScript</label>
+        </div>
+
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox">
+          <label class="form-check-label">Node.js</label>
+        </div>
+
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox">
+          <label class="form-check-label">React</label>
+        </div>
+
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox">
+          <label class="form-check-label">Java</label>
+        </div>
+      </div>
+
+      <!-- Clear Filters -->
+      <div class="col-md-2 d-flex align-items-end">
+        <button class="btn btn-outline-secondary w-100">
+          Clear Filters
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Results Table -->
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover align-middle">
+
+      <thead class="table-light">
+    <tr>
+        <th class="text-decoration-underline" style="cursor:pointer">
+        Image <span class="ms-1">↕</span>
+    </th>
+
+    <th class="text-decoration-underline" style="cursor:pointer">
+      Title <span class="ms-1">↕</span>
+    </th>
+
+    <th class="text-decoration-underline" style="cursor:pointer">
+      Category <span class="ms-1">↕</span>
+    </th>
+
+    <th class="text-decoration-underline" style="cursor:pointer">
+      Price (€) <span class="ms-1">↕</span>
+    </th>
+
+    <th class="text-decoration-underline" style="cursor:pointer">
+      Delivery (days) <span class="ms-1">↕</span>
+    </th>
+
+    <th class="text-decoration-underline" style="cursor:pointer">
+      Freelancer <span class="ms-1">↕</span>
+    </th>
+  </tr>
+</thead>
+
+      <tbody>
+        <!-- Result 1 -->
+        <tr>
+          <td>
+            <img src="https://via.placeholder.com/80" class="img-fluid rounded">
+          </td>
+          <td>Gig 1 Web Design</td>
+          <td>Web Development</td>
+          <td>180</td>
+          <td>12</td>
+          <td>Jane</td>
+        </tr>
+
+        <!-- Result 2 -->
+        <tr>
+          <td>
+            <img src="https://via.placeholder.com/80" class="img-fluid rounded">
+          </td>
+          <td>Gig 2 React Website</td>
+          <td>Web Development</td>
+          <td>250</td>
+          <td>10</td>
+          <td>James</td>
+        </tr>
+
+        <!-- Result 3 -->
+        <tr>
+          <td>
+            <img src="https://via.placeholder.com/80" class="img-fluid rounded">
+          </td>
+          <td>Gig 3 Landing Page</td>
+          <td>Graphic Design</td>
+          <td>120</td>
+          <td>5</td>
+          <td>John</td>
+        </tr>
+      </tbody>
+
+    </table>
+  </div>
+
+  <!-- Pagination (UI only) -->
+    <ul class="pagination justify-content-center">
+
+    <li class="page-item disabled">
+        <span class="page-link">Previous</span>
+    </li>
+
+    <li class="page-item active">
+        <span class="page-link">1</span>
+    </li>
+
+    <li class="page-item">
+        <a class="page-link" href="#">2</a>
+    </li>
+
+    <li class="page-item">
+        <a class="page-link" href="#">3</a>
+    </li>
+
+    <li class="page-item">
+        <a class="page-link" href="#">Next</a>
+    </li>
+</ul>
+</main>
+
+<%- include('../partials/footer') %>

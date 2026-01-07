@@ -7,6 +7,19 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
+
+    <!-- Search bar (Phase 4 - UI only) -->
+      <form class="d-flex me-4" action="/gigs/search" method="GET">
+      <input
+        class="form-control me-2"
+        type="search"
+        name="q"
+      placeholder="Search Gigs...">
+        <button class="btn btn-outline-light" type="submit">
+          Search
+        </button>
+      </form>
+
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">
           <a class="nav-link" href="/gigs">Browse Gigs</a>
