@@ -1,0 +1,159 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<main class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+
+      <h1 class="text-center mb-3">Create a Gig</h1>
+      <p class="text-center text-muted mb-4">
+        Fill in the details below to publish your service
+      </p>
+
+     <!--Success Message after a gig is submitted--> 
+<% if (success === true) { %>
+  <div class="alert alert-success text-center mt-4">
+    <h5>Your gig was submitted successfully!</h5>
+    <p>What would you like to do next?</p>
+
+    <a href="/gigs/create" class="btn btn-outline-primary me-2">
+      Create another gig
+    </a>
+
+    <a href="/gigs" class="btn btn-primary">
+      View my gigs
+    </a>
+  </div>
+<% } %>
+
+  <a href="/gigs" class="btn btn-primary">
+    View my gigs
+  </a>
+</div>
+
+
+      <form action="/gigs" method="POST">
+
+        <!-- Gig Title -->
+        <div class="mb-3">
+          <label class="form-label">Gig Title</label>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Gig 1 Web Design Service"
+          >
+        </div>
+
+        <!-- Price -->
+        <div class="mb-3">
+          <label class="form-label">Price (€)</label>
+          <input
+            type="number"
+            class="form-control"
+            placeholder="180"
+          >
+        </div>
+
+        <!-- Delivery Time -->
+        <div class="mb-3">
+          <label class="form-label">Delivery Time (days)</label>
+          <input
+            type="number"
+            class="form-control"
+            placeholder="12"
+          >
+        </div>
+
+        <!-- Category (Radio buttons) -->
+        <div class="mb-4">
+          <label class="form-label d-block">Category</label>
+
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="category">
+            <label class="form-check-label">Web Development</label>
+          </div>
+
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="category">
+            <label class="form-check-label">Graphic Design</label>
+          </div>
+
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="category">
+            <label class="form-check-label">Writing & Translation</label>
+          </div>
+
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="category">
+            <label class="form-check-label">Digital Marketing</label>
+          </div>
+
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="category">
+            <label class="form-check-label">Video & Animation</label>
+        </div>
+    </div>
+
+        <!-- Skills (Checkboxes) -->
+        <div class="mb-4">
+          <label class="form-label d-block">Skills</label>
+
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox">
+            <label class="form-check-label">HTML / CSS</label>
+          </div>
+
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox">
+            <label class="form-check-label">JavaScript</label>
+          </div>
+
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox">
+            <label class="form-check-label">Node.js</label>
+          </div>
+
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox">
+            <label class="form-check-label">React</label>
+          </div>
+
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox">
+            <label class="form-check-label">Java</label>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="mb-3">
+          <label class="form-label">Gig Description</label>
+          <textarea
+            class="form-control"
+            rows="4"
+            placeholder="Describe your service"
+          ></textarea>
+        </div>
+
+        <!-- File Upload -->
+        <div class="mb-4">
+          <label class="form-label">Gig Image or Doc</label>
+          <input
+            type="file"
+            class="form-control"
+          >
+        </div>
+
+        <!-- Submit -->
+        <div class="text-center">
+          <button type="submit" class="btn btn-primary btn-lg">
+            Submit Gig
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

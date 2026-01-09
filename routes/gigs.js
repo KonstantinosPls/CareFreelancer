@@ -7,17 +7,35 @@ const router = express.Router();
 router.get('/', (req, res) => {
   res.render('gigs/list', {
     title: 'Browse Gigs',
+     gigs: []
+  });
+});
+
+// GET /gigs/search - Search results in Phase 4 UI
+router.get('/search', (req, res) => {
+  res.render('gigs/search', {
+    title: 'Search Results',
+    results: [],
+    query: req.query.q || ''
   });
 });
 
 //GET/gigs/create - Show create gig form
 router.get('/create', (req, res) => {
-  res.send('Create gig form not implemented yet');
+  const success = req.session.gigSuccess || false;
+
+  req.session.gigSuccess = false;
+
+  res.render('gigs/create', {
+    title: 'Create Gig',
+    success
+  });
 });
 
 //POST/gigs - Create new gig
 router.post('/', (req, res) => {
-  res.send('Create gig functionality not implemented yet');
+  req.session.gigSuccess = true;
+  res.redirect('/gigs/create');
 });
 
 //GET/gigs/:id - Show gig details
