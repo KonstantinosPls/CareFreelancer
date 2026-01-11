@@ -1,0 +1,154 @@
+<%- include('../partials/header') %>
+    <%- include('../partials/navbar') %>
+
+        <main class="container mt-5">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+
+                    <h1 class="text-center mb-3">Edit Gig</h1>
+                    <p class="text-center text-muted mb-4">
+                        Update your gig details below
+                    </p>
+
+                    <form action="/gigs/<%= gig._id %>" method="POST" enctype="multipart/form-data" id="editGigForm">
+
+                        <!-- Gig Title -->
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Gig Title <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="title" name="title" value="<%= gig.title %>"
+                                required minlength="5">
+                        </div>
+
+                        <!-- Price -->
+                        <div class="mb-3">
+                            <label for="price" class="form-label">Price (€) <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="price" name="price" value="<%= gig.price %>"
+                                required min="5">
+                        </div>
+
+                        <!-- Delivery Time -->
+                        <div class="mb-3">
+                            <label for="deliveryTime" class="form-label">Delivery Time (days) <span
+                                    class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="deliveryTime" name="deliveryTime"
+                                value="<%= gig.deliveryTime %>" required min="1">
+                        </div>
+
+                        <!-- Category (Radio buttons) -->
+                        <div class="mb-4">
+                            <label class="form-label d-block">Category <span class="text-danger">*</span></label>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="category" id="cat1"
+                                    value="Web Development" <%=gig.category==='Web Development' ? 'checked' : '' %>
+                                required>
+                                <label class="form-check-label" for="cat1">Web Development</label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="category" id="cat2"
+                                    value="Graphic Design" <%=gig.category==='Graphic Design' ? 'checked' : '' %>>
+                                <label class="form-check-label" for="cat2">Graphic Design</label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="category" id="cat3"
+                                    value="Writing & Translation" <%=gig.category==='Writing & Translation' ? 'checked'
+                                    : '' %>>
+                                <label class="form-check-label" for="cat3">Writing & Translation</label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="category" id="cat4"
+                                    value="Digital Marketing" <%=gig.category==='Digital Marketing' ? 'checked' : '' %>>
+                                <label class="form-check-label" for="cat4">Digital Marketing</label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="category" id="cat5"
+                                    value="Video & Animation" <%=gig.category==='Video & Animation' ? 'checked' : '' %>>
+                                <label class="form-check-label" for="cat5">Video & Animation</label>
+                            </div>
+                        </div>
+
+                        <!-- Skills (Checkboxes) -->
+                        <div class="mb-4">
+                            <label class="form-label d-block">Skills</label>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="skill1" name="tags" value="HTML/CSS"
+                                    <%=gig.tags.includes('HTML/CSS') ? 'checked' : '' %>>
+                                <label class="form-check-label" for="skill1">HTML / CSS</label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="skill2" name="tags"
+                                    value="JavaScript" <%=gig.tags.includes('JavaScript') ? 'checked' : '' %>>
+                                <label class="form-check-label" for="skill2">JavaScript</label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="skill3" name="tags" value="Node.js"
+                                    <%=gig.tags.includes('Node.js') ? 'checked' : '' %>>
+                                <label class="form-check-label" for="skill3">Node.js</label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="skill4" name="tags" value="React"
+                                    <%=gig.tags.includes('React') ? 'checked' : '' %>>
+                                <label class="form-check-label" for="skill4">React</label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="skill5" name="tags" value="Java"
+                                    <%=gig.tags.includes('Java') ? 'checked' : '' %>>
+                                <label class="form-check-label" for="skill5">Java</label>
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Gig Description <span
+                                    class="text-danger">*</span></label>
+                            <textarea class="form-control" id="description" name="description" rows="4" required
+                                minlength="20"><%= gig.description %></textarea>
+                        </div>
+
+                        <!-- Current Images -->
+                        <% if (gig.images && gig.images.length> 0) { %>
+                            <div class="mb-3">
+                                <label class="form-label">Current Images</label>
+                                <div class="row">
+                                    <% gig.images.forEach(image=> { %>
+                                        <div class="col-md-3 mb-2">
+                                            <img src="<%= image %>" class="img-fluid rounded" alt="Gig image">
+                                        </div>
+                                        <% }) %>
+                                </div>
+                            </div>
+                            <% } %>
+
+                                <!-- Add More Images -->
+                                <div class="mb-4">
+                                    <label for="images" class="form-label">Add More Images</label>
+                                    <input type="file" class="form-control" id="images" name="images"
+                                        accept="image/jpeg,image/jpg,image/png" multiple>
+                                    <small class="form-text text-muted">Max 5MB per image. Accepted formats: .jpg,
+                                        .jpeg, .png</small>
+                                </div>
+
+                                <!-- Submit -->
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary btn-lg flex-grow-1">
+                                        Update Gig
+                                    </button>
+                                    <a href="/gigs/<%= gig._id %>" class="btn btn-secondary btn-lg">Cancel</a>
+                                </div>
+
+                    </form>
+
+                </div>
+            </div>
+        </main>
+
+        <%- include('../partials/footer') %>

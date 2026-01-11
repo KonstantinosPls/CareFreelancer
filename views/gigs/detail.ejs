@@ -1,0 +1,121 @@
+<%- include('../partials/header') %>
+    <%- include('../partials/navbar') %>
+
+        <main class="container mt-5">
+            <div class="row">
+                <!-- Gig Images -->
+                <div class="col-md-6">
+                    <% if (gig.images && gig.images.length> 0) { %>
+                        <div id="gigCarousel" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-inner">
+                                <% gig.images.forEach((image, index)=> { %>
+                                    <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+                                        <img src="<%= image %>" class="d-block w-100 rounded" alt="<%= gig.title %>">
+                                    </div>
+                                    <% }) %>
+                            </div>
+                            <% if (gig.images.length> 1) { %>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#gigCarousel"
+                                    data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Previous</span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#gigCarousel"
+                                    data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Next</span>
+                                </button>
+                                <% } %>
+                        </div>
+                        <% } else { %>
+                            <img src="https://via.placeholder.com/500x350?text=No+Image" class="img-fluid rounded"
+                                alt="No image">
+                            <% } %>
+                </div>
+
+                <!-- Gig Details -->
+                <div class="col-md-6">
+                    <h1 class="mb-3">
+                        <%= gig.title %>
+                    </h1>
+
+                    <!-- Category badge -->
+                    <p>
+                        <span class="badge bg-primary">
+                            <%= gig.category %>
+                        </span>
+                    </p>
+
+                    <!-- Price and Delivery -->
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h3 class="card-title text-success">€<%= gig.price %>
+                            </h3>
+                            <p class="card-text">
+                                <i class="bi bi-clock"></i> Delivery: <%= gig.deliveryTime %> day<%= gig.deliveryTime> 1
+                                        ? 's' : '' %>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Freelancer Info -->
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">About the Freelancer</h5>
+                            <p class="card-text">
+                                <strong>Username:</strong>
+                                <%= gig.freelancerId.username %><br>
+                                    <% if (gig.freelancerId.bio) { %>
+                                        <strong>Bio:</strong>
+                                        <%= gig.freelancerId.bio %>
+                                            <% } %>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <% if (isOwner) { %>
+                        <!-- Owner buttons -->
+                        <div class="d-grid gap-2">
+                            <a href="/gigs/<%= gig._id %>/edit" class="btn btn-warning">Edit Gig</a>
+                            <form action="/gigs/<%= gig._id %>/delete" method="POST"
+                                onsubmit="return confirm('Are you sure you want to delete this gig?');">
+                                <button type="submit" class="btn btn-danger w-100">Delete Gig</button>
+                            </form>
+                        </div>
+                        <% } else { %>
+                            <!-- Client button -->
+                            <div class="d-grid">
+                                <a href="/orders/create?gigId=<%= gig._id %>" class="btn btn-success btn-lg">Order
+                                    Now</a>
+                            </div>
+                            <% } %>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="row mt-5">
+                <div class="col-12">
+                    <h3>Description</h3>
+                    <p>
+                        <%= gig.description %>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Tags/Skills -->
+            <% if (gig.tags && gig.tags.length> 0) { %>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <h5>Skills & Expertise</h5>
+                        <% gig.tags.forEach(tag=> { %>
+                            <span class="badge bg-secondary me-1">
+                                <%= tag %>
+                            </span>
+                            <% }) %>
+                    </div>
+                </div>
+                <% } %>
+        </main>
+
+        <%- include('../partials/footer') %>
