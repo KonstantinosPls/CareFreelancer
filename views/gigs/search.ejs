@@ -1,174 +1,242 @@
 <%- include('../partials/header') %>
-<%- include('../partials/navbar') %>
+  <%- include('../partials/navbar') %>
 
-<main class="container mt-5">
+    <main class="container mt-5">
 
-  <!-- Page Title -->
-  <h1 class="mb-3">Search Results</h1>
-  <p class="text-muted">
-    Showing results for <strong>"Web"</strong>
-  </p>
+      <!-- Page Title -->
+      <h1 class="mb-3">Search Results</h1>
+      <% if (query) { %>
+        <p class="text-muted">
+          Showing results for <strong>"<%= query %>"</strong>
+        </p>
+        <% } %>
 
-  <!-- Results -->
-  <p class="mb-4">
-    <strong>3</strong> results found
-  </p>
+          <!-- Results count -->
+          <p class="mb-4">
+            <strong>
+              <%= totalResults %>
+            </strong> result<%= totalResults !==1 ? 's' : '' %> found
+          </p>
 
-  <!--Filtering Phase 4 UI-->
-  <div class="card mb-4">
-  <div class="card-body">
-    <h5 class="mb-3">Filter Results</h5>
+          <!--Filtering -->
+          <div class="card mb-4">
+            <div class="card-body">
+              <h5 class="mb-3">Filter Results</h5>
 
-    <div class="row">
-      <!-- Category Filter -->
-      <div class="col-md-4">
-        <label class="form-label">Category</label>
-        <select class="form-select">
-            <option selected>All Categories</option>
-            <option>Web Development</option>
-            <option>Graphic Design</option>
-            <option>Writing & Translation</option>
-            <option>Digital Marketing</option>
-            <option>Video & Animation</option>
-        </select>
-      </div>
+              <form action="/gigs/search" method="GET" id="filterForm">
+                <!-- Preserve search query -->
+                <input type="hidden" name="q" value="<%= query %>">
 
-      <!-- Skills Filter -->
-      <div class="col-md-6">
-        <label class="form-label d-block">Skills</label>
+                <div class="row">
+                  <!-- Category Filter -->
+                  <div class="col-md-4">
+                    <label class="form-label">Category</label>
+                    <select class="form-select" name="category"
+                      onchange="document.getElementById('filterForm').submit()">
+                      <option value="" <%=!category || category==='' ? 'selected' : '' %>>All Categories</option>
+                      <option value="Web Development" <%=category==='Web Development' ? 'selected' : '' %>>Web
+                        Development</option>
+                      <option value="Graphic Design" <%=category==='Graphic Design' ? 'selected' : '' %>>Graphic Design
+                      </option>
+                      <option value="Writing & Translation" <%=category==='Writing & Translation' ? 'selected' : '' %>
+                        >Writing & Translation</option>
+                      <option value="Digital Marketing" <%=category==='Digital Marketing' ? 'selected' : '' %>>Digital
+                        Marketing</option>
+                      <option value="Video & Animation" <%=category==='Video & Animation' ? 'selected' : '' %>>Video &
+                        Animation</option>
+                    </select>
+                  </div>
 
-        <div class="form-check form-check-inline">
-          <input class="form-check-input" type="checkbox">
-          <label class="form-check-label">HTML / CSS</label>
-        </div>
+                  <!-- Skills Filter -->
+                  <div class="col-md-6">
+                    <label class="form-label d-block">Skills</label>
 
-        <div class="form-check form-check-inline">
-          <input class="form-check-input" type="checkbox">
-          <label class="form-check-label">JavaScript</label>
-        </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="checkbox" name="tags" value="HTML/CSS"
+                        <%=tags.includes('HTML/CSS') ? 'checked' : '' %>
+                      onchange="document.getElementById('filterForm').submit()">
+                      <label class="form-check-label">HTML / CSS</label>
+                    </div>
 
-        <div class="form-check form-check-inline">
-          <input class="form-check-input" type="checkbox">
-          <label class="form-check-label">Node.js</label>
-        </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="checkbox" name="tags" value="JavaScript"
+                        <%=tags.includes('JavaScript') ? 'checked' : '' %>
+                      onchange="document.getElementById('filterForm').submit()">
+                      <label class="form-check-label">JavaScript</label>
+                    </div>
 
-        <div class="form-check form-check-inline">
-          <input class="form-check-input" type="checkbox">
-          <label class="form-check-label">React</label>
-        </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="checkbox" name="tags" value="Node.js"
+                        <%=tags.includes('Node.js') ? 'checked' : '' %>
+                      onchange="document.getElementById('filterForm').submit()">
+                      <label class="form-check-label">Node.js</label>
+                    </div>
 
-        <div class="form-check form-check-inline">
-          <input class="form-check-input" type="checkbox">
-          <label class="form-check-label">Java</label>
-        </div>
-      </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="checkbox" name="tags" value="React"
+                        <%=tags.includes('React') ? 'checked' : '' %>
+                      onchange="document.getElementById('filterForm').submit()">
+                      <label class="form-check-label">React</label>
+                    </div>
 
-      <!-- Clear Filters -->
-      <div class="col-md-2 d-flex align-items-end">
-        <button class="btn btn-outline-secondary w-100">
-          Clear Filters
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="checkbox" name="tags" value="Java" <%=tags.includes('Java')
+                        ? 'checked' : '' %> onchange="document.getElementById('filterForm').submit()">
+                      <label class="form-check-label">Java</label>
+                    </div>
+                  </div>
 
-  <!-- Results Table -->
-  <div class="table-responsive">
-    <table class="table table-bordered table-hover align-middle">
+                  <!-- Clear Filters -->
+                  <div class="col-md-2 d-flex align-items-end">
+                    <a href="/gigs/search?q=<%= query %>" class="btn btn-outline-secondary w-100">
+                      Clear Filters
+                    </a>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
 
-      <thead class="table-light">
-    <tr>
-        <th class="text-decoration-underline" style="cursor:pointer">
-        Image <span class="ms-1">↕</span>
-    </th>
+          <!-- Results Table -->
+          <% if (results && results.length> 0) { %>
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover align-middle" id="resultsTable">
 
-    <th class="text-decoration-underline" style="cursor:pointer">
-      Title <span class="ms-1">↕</span>
-    </th>
+                <thead class="table-light">
+                  <tr>
+                    <th class="sortable" data-sort="image" style="cursor:pointer">
+                      Image <span class="sort-icon">↕</span>
+                    </th>
 
-    <th class="text-decoration-underline" style="cursor:pointer">
-      Category <span class="ms-1">↕</span>
-    </th>
+                    <th class="sortable" data-sort="title" style="cursor:pointer">
+                      Title <span class="sort-icon">↕</span>
+                    </th>
 
-    <th class="text-decoration-underline" style="cursor:pointer">
-      Price (€) <span class="ms-1">↕</span>
-    </th>
+                    <th class="sortable" data-sort="category" style="cursor:pointer">
+                      Category <span class="sort-icon">↕</span>
+                    </th>
 
-    <th class="text-decoration-underline" style="cursor:pointer">
-      Delivery (days) <span class="ms-1">↕</span>
-    </th>
+                    <th class="sortable" data-sort="price" style="cursor:pointer">
+                      Price (€) <span class="sort-icon">↕</span>
+                    </th>
 
-    <th class="text-decoration-underline" style="cursor:pointer">
-      Freelancer <span class="ms-1">↕</span>
-    </th>
-  </tr>
-</thead>
+                    <th class="sortable" data-sort="deliveryTime" style="cursor:pointer">
+                      Delivery (days) <span class="sort-icon">↕</span>
+                    </th>
 
-      <tbody>
-        <!-- Result 1 -->
-        <tr>
-          <td>
-            <img src="https://via.placeholder.com/80" class="img-fluid rounded">
-          </td>
-          <td>Gig 1 Web Design</td>
-          <td>Web Development</td>
-          <td>180</td>
-          <td>12</td>
-          <td>Jane</td>
-        </tr>
+                    <th class="sortable" data-sort="freelancer" style="cursor:pointer">
+                      Freelancer <span class="sort-icon">↕</span>
+                    </th>
 
-        <!-- Result 2 -->
-        <tr>
-          <td>
-            <img src="https://via.placeholder.com/80" class="img-fluid rounded">
-          </td>
-          <td>Gig 2 React Website</td>
-          <td>Web Development</td>
-          <td>250</td>
-          <td>10</td>
-          <td>James</td>
-        </tr>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
 
-        <!-- Result 3 -->
-        <tr>
-          <td>
-            <img src="https://via.placeholder.com/80" class="img-fluid rounded">
-          </td>
-          <td>Gig 3 Landing Page</td>
-          <td>Graphic Design</td>
-          <td>120</td>
-          <td>5</td>
-          <td>John</td>
-        </tr>
-      </tbody>
+                <tbody>
+                  <% results.forEach(gig=> { %>
+                    <tr>
+                      <td>
+                        <% if (gig.images && gig.images.length> 0) { %>
+                          <img src="<%= gig.images[0] %>" class="img-fluid rounded"
+                            style="width: 80px; height: 80px; object-fit: cover;">
+                          <% } else { %>
+                            <img src="https://via.placeholder.com/80" class="img-fluid rounded">
+                            <% } %>
+                      </td>
+                      <td>
+                        <%= gig.title %>
+                      </td>
+                      <td>
+                        <%= gig.category %>
+                      </td>
+                      <td>€<%= gig.price %>
+                      </td>
+                      <td>
+                        <%= gig.deliveryTime %>
+                      </td>
+                      <td>
+                        <%= gig.freelancerId ? gig.freelancerId.username : 'Unknown' %>
+                      </td>
+                      <td>
+                        <a href="/gigs/<%= gig._id %>" class="btn btn-sm btn-primary">View</a>
+                      </td>
+                    </tr>
+                    <% }) %>
+                </tbody>
 
-    </table>
-  </div>
+              </table>
+            </div>
 
-  <!-- Pagination (UI only) -->
-    <ul class="pagination justify-content-center">
+            <!-- Pagination -->
+            <% if (totalPages> 1) { %>
+              <nav>
+                <ul class="pagination justify-content-center">
+                  <!-- Previous button -->
+                  <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                    <% if (currentPage> 1) { %>
+                      <a class="page-link"
+                        href="/gigs/search?q=<%= query %>&category=<%= category %>&tags=<%= tags.join(',') %>&sort=<%= sortBy %>&order=<%= sortOrder %>&page=<%= currentPage - 1 %>">Previous</a>
+                      <% } else { %>
+                        <span class="page-link">Previous</span>
+                        <% } %>
+                  </li>
 
-    <li class="page-item disabled">
-        <span class="page-link">Previous</span>
-    </li>
+                  <!-- Page numbers -->
+                  <% for (let i=1; i <=totalPages; i++) { %>
+                    <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                      <a class="page-link"
+                        href="/gigs/search?q=<%= query %>&category=<%= category %>&tags=<%= tags.join(',') %>&sort=<%= sortBy %>&order=<%= sortOrder %>&page=<%= i %>">
+                        <%= i %>
+                      </a>
+                    </li>
+                    <% } %>
 
-    <li class="page-item active">
-        <span class="page-link">1</span>
-    </li>
+                      <!-- Next button -->
+                      <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                        <% if (currentPage < totalPages) { %>
+                          <a class="page-link"
+                            href="/gigs/search?q=<%= query %>&category=<%= category %>&tags=<%= tags.join(',') %>&sort=<%= sortBy %>&order=<%= sortOrder %>&page=<%= currentPage + 1 %>">Next</a>
+                          <% } else { %>
+                            <span class="page-link">Next</span>
+                            <% } %>
+                      </li>
+                </ul>
+              </nav>
+              <% } %>
+                <% } else { %>
+                  <div class="alert alert-warning">
+                    <h5>No results found</h5>
+                    <p>Try adjusting your search criteria or filters.</p>
+                  </div>
+                  <% } %>
+    </main>
 
-    <li class="page-item">
-        <a class="page-link" href="#">2</a>
-    </li>
+    <script>
+      // Client-side table sorting
+      document.addEventListener('DOMContentLoaded', function () {
+        const sortableHeaders = document.querySelectorAll('.sortable');
 
-    <li class="page-item">
-        <a class="page-link" href="#">3</a>
-    </li>
+        sortableHeaders.forEach(header => {
+          header.addEventListener('click', function () {
+            const sortField = this.dataset.sort;
+            const currentUrl = new URL(window.location.href);
+            const currentSort = currentUrl.searchParams.get('sort');
+            const currentOrder = currentUrl.searchParams.get('order') || 'desc';
 
-    <li class="page-item">
-        <a class="page-link" href="#">Next</a>
-    </li>
-</ul>
-</main>
+            // Toggle order if clicking same field, otherwise default to desc
+            let newOrder = 'desc';
+            if (currentSort === sortField && currentOrder === 'desc') {
+              newOrder = 'asc';
+            }
 
-<%- include('../partials/footer') %>
+            currentUrl.searchParams.set('sort', sortField);
+            currentUrl.searchParams.set('order', newOrder);
+            currentUrl.searchParams.set('page', '1'); // Reset to page 1 on new sort
+
+            window.location.href = currentUrl.toString();
+          });
+        });
+      });
+    </script>
+
+    <%- include('../partials/footer') %>
