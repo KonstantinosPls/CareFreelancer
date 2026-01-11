@@ -52,8 +52,7 @@
                             <h3 class="card-title text-success">€<%= gig.price %>
                             </h3>
                             <p class="card-text">
-                                <i class="bi bi-clock"></i> Delivery: <%= gig.deliveryTime %> day<%= gig.deliveryTime> 1
-                                        ? 's' : '' %>
+                                <i class="bi bi-clock"></i> Delivery: <%= gig.deliveryTime %> day<%= gig.deliveryTime > 1 ? 's' : '' %>
                             </p>
                         </div>
                     </div>

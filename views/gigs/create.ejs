@@ -1,186 +1,149 @@
 <%- include('../partials/header') %>
-<%- include('../partials/navbar') %>
+  <%- include('../partials/navbar') %>
 
-<main class="container mt-5">
-  <div class="row justify-content-center">
-    <div class="col-md-8">
+    <main class="container mt-5">
+      <div class="row justify-content-center">
+        <div class="col-md-8">
 
-      <h1 class="text-center mb-3">Create a Gig</h1>
-      <p class="text-center text-muted mb-4">
-        Fill in the details below to publish your service
-      </p>
+          <h1 class="text-center mb-3">Create a Gig</h1>
+          <p class="text-center text-muted mb-4">
+            Fill in the details below to publish your service
+          </p>
 
-     <!--Success Message after a gig is submitted--> 
-<% if (success === true) { %>
-  <div class="alert alert-success text-center mt-4">
-    <h5>Your gig was submitted successfully!</h5>
-    <p>What would you like to do next?</p>
+          <!--Success Message after a gig is submitted-->
+          <% if (success===true) { %>
+            <div class="alert alert-success text-center mt-4">
+              <h5>Your gig was submitted successfully!</h5>
+              <p>What would you like to do next?</p>
 
-    <a href="/gigs/create" class="btn btn-outline-primary me-2">
-      Create another gig
-    </a>
+              <a href="/gigs/create" class="btn btn-outline-primary me-2">
+                Create another gig
+              </a>
 
-    <a href="/gigs" class="btn btn-primary">
-      View my gigs
-    </a>
-  </div>
-<% } %>
-
-  <a href="/gigs" class="btn btn-primary">
-    View my gigs
-  </a>
-</div>
+              <a href="/gigs" class="btn btn-primary">
+                View my gigs
+              </a>
+            </div>
+            <% } %>
 
 
-      <form action="/gigs" method="POST" enctype="multipart/form-data" id="gigForm">
+              <form action="/gigs" method="POST" enctype="multipart/form-data" id="gigForm">
 
-        <!-- Gig Title -->
-        <div class="mb-3">
-          <label for="title" class="form-label">Gig Title <span class="text-danger">*</span></label>
-          <input
-            type="text"
-            class="form-control"
-            id="title"
-            name="title"
-            placeholder="e.g., I will design a professional website"
-            required
-            minlength="5"
-          >
-          <div class="invalid-feedback">Title must be at least 5 characters.</div>
+                <!-- Gig Title -->
+                <div class="mb-3">
+                  <label for="title" class="form-label">Gig Title <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" id="title" name="title"
+                    placeholder="e.g., I will design a professional website" required minlength="5">
+                  <div class="invalid-feedback">Title must be at least 5 characters.</div>
+                </div>
+
+                <!-- Price -->
+                <div class="mb-3">
+                  <label for="price" class="form-label">Price (€) <span class="text-danger">*</span></label>
+                  <input type="number" class="form-control" id="price" name="price" placeholder="180" required min="5">
+                  <div class="invalid-feedback">Price must be at least €5.</div>
+                </div>
+
+                <!-- Delivery Time -->
+                <div class="mb-3">
+                  <label for="deliveryTime" class="form-label">Delivery Time (days) <span
+                      class="text-danger">*</span></label>
+                  <input type="number" class="form-control" id="deliveryTime" name="deliveryTime" placeholder="12"
+                    required min="1">
+                  <div class="invalid-feedback">Delivery time must be at least 1 day.</div>
+                </div>
+
+                <!-- Category (Radio buttons) -->
+                <div class="mb-4">
+                  <label class="form-label d-block">Category <span class="text-danger">*</span></label>
+
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="category" id="cat1" value="Web Development"
+                      required>
+                    <label class="form-check-label" for="cat1">Web Development</label>
+                  </div>
+
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="category" id="cat2" value="Graphic Design">
+                    <label class="form-check-label" for="cat2">Graphic Design</label>
+                  </div>
+
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="category" id="cat3"
+                      value="Writing & Translation">
+                    <label class="form-check-label" for="cat3">Writing & Translation</label>
+                  </div>
+
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="category" id="cat4" value="Digital Marketing">
+                    <label class="form-check-label" for="cat4">Digital Marketing</label>
+                  </div>
+
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="category" id="cat5" value="Video & Animation">
+                    <label class="form-check-label" for="cat5">Video & Animation</label>
+                  </div>
+                  <div class="invalid-feedback">Please select a category.</div>
+                </div>
+
+                <!-- Skills (Checkboxes) -->
+                <div class="mb-4">
+                  <label class="form-label d-block">Skills</label>
+
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="skill1" name="tags" value="HTML/CSS">
+                    <label class="form-check-label" for="skill1">HTML / CSS</label>
+                  </div>
+
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="skill2" name="tags" value="JavaScript">
+                    <label class="form-check-label" for="skill2">JavaScript</label>
+                  </div>
+
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="skill3" name="tags" value="Node.js">
+                    <label class="form-check-label" for="skill3">Node.js</label>
+                  </div>
+
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="skill4" name="tags" value="React">
+                    <label class="form-check-label" for="skill4">React</label>
+                  </div>
+
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="skill5" name="tags" value="Java">
+                    <label class="form-check-label" for="skill5">Java</label>
+                  </div>
+                </div>
+
+                <!-- Description -->
+                <div class="mb-3">
+                  <label for="description" class="form-label">Gig Description <span class="text-danger">*</span></label>
+                  <textarea class="form-control" id="description" name="description" rows="4"
+                    placeholder="Describe your service in detail" required minlength="20"></textarea>
+                  <div class="invalid-feedback">Description must be at least 20 characters.</div>
+                </div>
+
+                <!-- File Upload -->
+                <div class="mb-4">
+                  <label for="images" class="form-label">Gig Images</label>
+                  <input type="file" class="form-control" id="images" name="images"
+                    accept="image/jpeg,image/jpg,image/png" multiple>
+                  <small class="form-text text-muted">Max 5MB per image. Accepted formats: .jpg, .jpeg, .png</small>
+                  <div id="imagePreview" class="mt-2"></div>
+                </div>
+
+                <!-- Submit -->
+                <div class="text-center">
+                  <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                    Submit Gig
+                  </button>
+                </div>
+
+              </form>
+
         </div>
+      </div>
+    </main>
 
-        <!-- Price -->
-        <div class="mb-3">
-          <label for="price" class="form-label">Price (€) <span class="text-danger">*</span></label>
-          <input
-            type="number"
-            class="form-control"
-            id="price"
-            name="price"
-            placeholder="180"
-            required
-            min="5"
-          >
-          <div class="invalid-feedback">Price must be at least €5.</div>
-        </div>
-
-        <!-- Delivery Time -->
-        <div class="mb-3">
-          <label for="deliveryTime" class="form-label">Delivery Time (days) <span class="text-danger">*</span></label>
-          <input
-            type="number"
-            class="form-control"
-            id="deliveryTime"
-            name="deliveryTime"
-            placeholder="12"
-            required
-            min="1"
-          >
-          <div class="invalid-feedback">Delivery time must be at least 1 day.</div>
-        </div>
-
-        <!-- Category (Radio buttons) -->
-        <div class="mb-4">
-          <label class="form-label d-block">Category <span class="text-danger">*</span></label>
-
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="category" id="cat1" value="Web Development" required>
-            <label class="form-check-label" for="cat1">Web Development</label>
-          </div>
-
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="category" id="cat2" value="Graphic Design">
-            <label class="form-check-label" for="cat2">Graphic Design</label>
-          </div>
-
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="category" id="cat3" value="Writing & Translation">
-            <label class="form-check-label" for="cat3">Writing & Translation</label>
-          </div>
-
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="category" id="cat4" value="Digital Marketing">
-            <label class="form-check-label" for="cat4">Digital Marketing</label>
-          </div>
-
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="category" id="cat5" value="Video & Animation">
-            <label class="form-check-label" for="cat5">Video & Animation</label>
-        </div>
-        <div class="invalid-feedback">Please select a category.</div>
-    </div>
-
-        <!-- Skills (Checkboxes) -->
-        <div class="mb-4">
-          <label class="form-label d-block">Skills</label>
-
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="skill1" name="tags" value="HTML/CSS">
-            <label class="form-check-label" for="skill1">HTML / CSS</label>
-          </div>
-
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="skill2" name="tags" value="JavaScript">
-            <label class="form-check-label" for="skill2">JavaScript</label>
-          </div>
-
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="skill3" name="tags" value="Node.js">
-            <label class="form-check-label" for="skill3">Node.js</label>
-          </div>
-
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="skill4" name="tags" value="React">
-            <label class="form-check-label" for="skill4">React</label>
-          </div>
-
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="skill5" name="tags" value="Java">
-            <label class="form-check-label" for="skill5">Java</label>
-          </div>
-        </div>
-
-        <!-- Description -->
-        <div class="mb-3">
-          <label for="description" class="form-label">Gig Description <span class="text-danger">*</span></label>
-          <textarea
-            class="form-control"
-            id="description"
-            name="description"
-            rows="4"
-            placeholder="Describe your service in detail"
-            required
-            minlength="20"
-          ></textarea>
-          <div class="invalid-feedback">Description must be at least 20 characters.</div>
-        </div>
-
-        <!-- File Upload -->
-        <div class="mb-4">
-          <label for="images" class="form-label">Gig Images</label>
-          <input
-            type="file"
-            class="form-control"
-            id="images"
-            name="images"
-            accept="image/jpeg,image/jpg,image/png"
-            multiple
-          >
-          <small class="form-text text-muted">Max 5MB per image. Accepted formats: .jpg, .jpeg, .png</small>
-          <div id="imagePreview" class="mt-2"></div>
-        </div>
-
-        <!-- Submit -->
-        <div class="text-center">
-          <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
-            Submit Gig
-          </button>
-        </div>
-
-      </form>
-
-    </div>
-  </div>
-</main>
-
-<%- include('../partials/footer') %>
+    <%- include('../partials/footer') %>
