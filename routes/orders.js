@@ -3,7 +3,7 @@ const router = express.Router();
 
 const Order = require('../models/Order');
 const Gig = require('../models/Gig');
-const { isAuthenticated, isClient } = require('../middleware/auth');
+const { isAuthenticated, isClient, isFreelancer } = require('../middleware/auth');
 
 // POST /orders - Create a new order
 router.post('/', isAuthenticated, isClient, async (req, res) => {
@@ -12,7 +12,7 @@ router.post('/', isAuthenticated, isClient, async (req, res) => {
 
     // 1. Fetch Gig first (Fail fast if it doesn't exist)
     const gig = await Gig.findById(gigId).lean();
-    
+
     if (!gigId) {
       return res.status(400).send('gigId is required');
     }
@@ -40,9 +40,7 @@ router.post('/', isAuthenticated, isClient, async (req, res) => {
       deliveryDate
     });
 
-    // res.redirect('/views/orders/client-orders.ejs');  ////////////////////////////////////
-    res.redirect('/orders/client'); 
-    // res.render('orders/client', { title: 'My Orders', orders });
+    res.redirect('/orders/client');
 
   } catch (err) {
     console.error('Order creation failed:', err);
@@ -50,9 +48,7 @@ router.post('/', isAuthenticated, isClient, async (req, res) => {
   }
 });
 
-module.exports = router;
-//GET/orders/client - Client orders
-
+// GET /orders/client - Client orders
 router.get('/client', isAuthenticated, isClient, async (req, res) => {
   try {
     const orders = await Order.find({ clientId: req.session.user._id })
@@ -70,11 +66,8 @@ router.get('/client', isAuthenticated, isClient, async (req, res) => {
     return res.status(500).render('500', { title: 'Server Error' });
   }
 });
- 
-//GET/orders/freelancer - Freelancer orders
-const { isAuthenticated, isFreelancer } = require('../middleware/auth');
-const Order = require('../models/Order');
 
+// GET /orders/freelancer - Freelancer orders
 router.get('/freelancer', isAuthenticated, isFreelancer, async (req, res) => {
   try {
     const orders = await Order.find({ freelancerId: req.session.user._id })
@@ -93,11 +86,41 @@ router.get('/freelancer', isAuthenticated, isFreelancer, async (req, res) => {
   }
 });
 
+// GET /orders/:id - Show order details
+router.get('/:id', isAuthenticated, async (req, res) => {
+  try {
+    const user = req.session.user;
 
-//POST/orders - Create new order
-const { isAuthenticated } = require('../middleware/auth');
-const Order = require('../models/Order');
+    const order = await Order.findById(req.params.id)
+      .populate('gigId', 'title')
+      .populate('clientId', 'username')
+      .populate('freelancerId', 'username')
+      .lean();
 
+    if (!order) {
+      return res.status(404).render('404', { title: 'Order Not Found' });
+    }
+
+    const isClientUser =
+      order.clientId && order.clientId._id.toString() === user._id.toString();
+    const isFreelancerUser =
+      order.freelancerId && order.freelancerId._id.toString() === user._id.toString();
+
+    if (!isClientUser && !isFreelancerUser) {
+      return res.status(403).send('Access denied');
+    }
+
+    return res.render('orders/details', {
+      title: 'Order Details - CareFreelancer',
+      order
+    });
+  } catch (err) {
+    console.error('Order details error:', err);
+    return res.status(500).render('500', { title: 'Server Error' });
+  }
+});
+
+// POST /orders/:id - Update order status
 router.post('/:id', isAuthenticated, async (req, res) => {
   try {
     const { action } = req.body;
@@ -136,98 +159,6 @@ router.post('/:id', isAuthenticated, async (req, res) => {
       return res.redirect('/orders/freelancer');
     }
 
-    if (action === 'complete') {
-      if (!isFreelancerUser) return res.status(403).send('Freelancers only');
-      if (order.status !== 'in-progress') return res.status(400).send('Only in-progress orders can be completed');
-
-      order.status = 'completed';
-      order.completedDate = new Date();
-      await order.save();
-      return res.redirect('/orders/freelancer');
-    }
-
-    return res.status(400).send('Invalid action');
-  } catch (err) {
-    console.error('Update order status error:', err);
-    return res.status(500).render('500', { title: 'Server Error' });
-  }
-});
-
-
-// GET /orders/:id - Show order details
-router.get('/:id', isAuthenticated, async (req, res) => {
-  try {
-    const user = req.session.user;
-
-    const order = await Order.findById(req.params.id)
-      .populate('gigId', 'title')
-      .populate('clientId', 'username')
-      .populate('freelancerId', 'username')
-      .lean();
-
-    if (!order) {
-      return res.status(404).render('404', { title: 'Order Not Found' });
-    }
-
-    const isClientUser =
-      order.clientId && order.clientId._id.toString() === user._id.toString();
-    const isFreelancerUser =
-      order.freelancerId && order.freelancerId._id.toString() === user._id.toString();
-
-    if (!isClientUser && !isFreelancerUser) {
-      return res.status(403).send('Access denied');
-    }
-
-    return res.render('orders/details', {
-      title: 'Order Details - CareFreelancer',
-      order
-    });
-  } catch (err) {
-    console.error('Order details error:', err);
-    return res.status(500).render('500', { title: 'Server Error' });
-  }
-});
-
-
-// POST /orders/:id - Update order status
-router.post('/:id', isAuthenticated, async (req, res) => {
-  try {
-    const { action } = req.body;
-    const user = req.session.user;
-
-    const order = await Order.findById(req.params.id);
-    if (!order) {
-      return res.status(404).render('404', { title: 'Order Not Found' });
-    }
-
-    const isClientUser = order.clientId.toString() === user._id.toString();
-    const isFreelancerUser = order.freelancerId.toString() === user._id.toString();
-
-    if (!isClientUser && !isFreelancerUser) {
-      return res.status(403).send('Access denied');
-    }
-
-    // Client: cancel pending
-    if (action === 'cancel') {
-      if (!isClientUser) return res.status(403).send('Clients only');
-      if (order.status !== 'pending') return res.status(400).send('Only pending orders can be cancelled');
-
-      order.status = 'cancelled';
-      await order.save();
-      return res.redirect('/orders/client');
-    }
-
-    // Freelancer: start pending
-    if (action === 'start') {
-      if (!isFreelancerUser) return res.status(403).send('Freelancers only');
-      if (order.status !== 'pending') return res.status(400).send('Only pending orders can be started');
-
-      order.status = 'in-progress';
-      await order.save();
-      return res.redirect('/orders/freelancer');
-    }
-
-    // Freelancer: complete in-progress
     if (action === 'complete') {
       if (!isFreelancerUser) return res.status(403).send('Freelancers only');
       if (order.status !== 'in-progress') return res.status(400).send('Only in-progress orders can be completed');
