@@ -68,14 +68,16 @@
 
               <td>
                 <% if (o.status === 'pending') { %>
-                  <form action="/orders/<%= o._id %>" method="POST" class="d-inline">
+                  <form action="/orders/<%= o._id %>?_method=PATCH" method="POST" class="d-inline">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                     <input type="hidden" name="action" value="start">
                     <button type="submit" class="btn btn-sm btn-outline-primary">
                       Start
                     </button>
                   </form>
                 <% } else if (o.status === 'in-progress') { %>
-                  <form action="/orders/<%= o._id %>" method="POST" class="d-inline">
+                  <form action="/orders/<%= o._id %>?_method=PATCH" method="POST" class="d-inline">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                     <input type="hidden" name="action" value="complete">
                     <button type="submit" class="btn btn-sm btn-outline-success">
                       Complete

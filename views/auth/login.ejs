@@ -14,6 +14,12 @@
           <% if (typeof error !== 'undefined' && error) { %>
             <div class="alert alert-danger">
               <%= error %>
+              <% if (typeof showResendLink !== 'undefined' && showResendLink) { %>
+                <br><br>
+                <a href="/auth/resend-verification?email=<%= encodeURIComponent(userEmail || '') %>" class="alert-link">
+                  Click here to resend verification email
+                </a>
+              <% } %>
             </div>
           <% } %>
 
@@ -26,6 +32,7 @@
 
           <!-- Login form -->
           <form id="loginForm" action="/auth/login" method="POST" novalidate>
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
             <!-- email field for login -->
             <div class="mb-3">
@@ -52,6 +59,9 @@
                 required
               >
               <div class="invalid-feedback">Please enter your password</div>
+              <div class="text-end mt-1">
+                <a href="/auth/forgot-password" class="small text-muted">Forgot your password?</a>
+              </div>
             </div>
 
             <!-- Remember me checkbox that will increase the session duration -->

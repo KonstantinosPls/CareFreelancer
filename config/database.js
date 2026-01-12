@@ -7,7 +7,12 @@ const connectDB = async () => {
     console.log('MongoDB connected successfully');
   } catch (err) {
     console.error('MongoDB connection error:', err.message);
-    // process.exit(1); // Allow server to run without DB for UI preview
+    // In production, exit if DB connection fails - app cannot function without it
+    if (process.env.NODE_ENV === 'production') {
+      process.exit(1);
+    }
+    // In development, warn but allow server to start for UI preview
+    console.warn('WARNING: Server running without database connection!');
   }
 };
 

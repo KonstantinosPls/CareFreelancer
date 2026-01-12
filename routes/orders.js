@@ -14,15 +14,24 @@ router.post('/', isAuthenticated, isClient, async (req, res) => {
     const gig = await Gig.findById(gigId).lean();
 
     if (!gigId) {
-      return res.status(400).send('gigId is required');
+      return res.status(400).render('400', {
+        title: 'Bad Request - CareFreelancer',
+        message: 'Missing gig ID. Please select a gig to order.'
+      });
     }
 
     // 2. Consolidated Validation
     if (!gig || gig.status === 'deleted') {
-      return res.status(404).send('Gig not found');
+      return res.status(404).render('404', {
+        title: 'Not Found - CareFreelancer',
+        message: 'This gig is no longer available.'
+      });
     }
     if (!requirements || requirements.trim().length < 10) {
-      return res.status(400).send('must be at least 10 characters');
+      return res.status(400).render('400', {
+        title: 'Bad Request - CareFreelancer',
+        message: 'Requirements must be at least 10 characters long. Please describe what you need from the freelancer.'
+      });
     }
 
     // 3. Calculate Delivery Date
@@ -107,10 +116,13 @@ router.get('/:id', isAuthenticated, async (req, res) => {
       order.freelancerId && order.freelancerId._id.toString() === user._id.toString();
 
     if (!isClientUser && !isFreelancerUser) {
-      return res.status(403).send('Access denied');
+      return res.status(403).render('403', {
+        title: 'Access Denied - CareFreelancer',
+        message: 'You can only view orders you are involved in.'
+      });
     }
 
-    return res.render('orders/details', {
+    return res.render('orders/detail', {
       title: 'Order Details - CareFreelancer',
       order
     });
@@ -120,8 +132,8 @@ router.get('/:id', isAuthenticated, async (req, res) => {
   }
 });
 
-// POST /orders/:id - Update order status
-router.post('/:id', isAuthenticated, async (req, res) => {
+// PATCH /orders/:id - Update order status
+router.patch('/:id', isAuthenticated, async (req, res) => {
   try {
     const { action } = req.body;
     const user = req.session.user;
@@ -136,13 +148,26 @@ router.post('/:id', isAuthenticated, async (req, res) => {
 
     // Access control: only the client or the freelancer in this order can update it
     if (!isClientUser && !isFreelancerUser) {
-      return res.status(403).send('Access denied');
+      return res.status(403).render('403', {
+        title: 'Access Denied - CareFreelancer',
+        message: 'You can only modify orders you are involved in.'
+      });
     }
 
     // Client actions
     if (action === 'cancel') {
-      if (!isClientUser) return res.status(403).send('Clients only');
-      if (order.status !== 'pending') return res.status(400).send('Only pending orders can be cancelled');
+      if (!isClientUser) {
+        return res.status(403).render('403', {
+          title: 'Access Denied - CareFreelancer',
+          message: 'Only the client can cancel this order.'
+        });
+      }
+      if (order.status !== 'pending') {
+        return res.status(400).render('400', {
+          title: 'Bad Request - CareFreelancer',
+          message: 'Only pending orders can be cancelled. This order is already ' + order.status + '.'
+        });
+      }
 
       order.status = 'cancelled';
       await order.save();
@@ -151,8 +176,18 @@ router.post('/:id', isAuthenticated, async (req, res) => {
 
     // Freelancer actions
     if (action === 'start') {
-      if (!isFreelancerUser) return res.status(403).send('Freelancers only');
-      if (order.status !== 'pending') return res.status(400).send('Only pending orders can be started');
+      if (!isFreelancerUser) {
+        return res.status(403).render('403', {
+          title: 'Access Denied - CareFreelancer',
+          message: 'Only the freelancer can start this order.'
+        });
+      }
+      if (order.status !== 'pending') {
+        return res.status(400).render('400', {
+          title: 'Bad Request - CareFreelancer',
+          message: 'Only pending orders can be started. This order is already ' + order.status + '.'
+        });
+      }
 
       order.status = 'in-progress';
       await order.save();
@@ -160,8 +195,18 @@ router.post('/:id', isAuthenticated, async (req, res) => {
     }
 
     if (action === 'complete') {
-      if (!isFreelancerUser) return res.status(403).send('Freelancers only');
-      if (order.status !== 'in-progress') return res.status(400).send('Only in-progress orders can be completed');
+      if (!isFreelancerUser) {
+        return res.status(403).render('403', {
+          title: 'Access Denied - CareFreelancer',
+          message: 'Only the freelancer can complete this order.'
+        });
+      }
+      if (order.status !== 'in-progress') {
+        return res.status(400).render('400', {
+          title: 'Bad Request - CareFreelancer',
+          message: 'Only in-progress orders can be completed. This order is currently ' + order.status + '.'
+        });
+      }
 
       order.status = 'completed';
       order.completedDate = new Date();
@@ -169,7 +214,10 @@ router.post('/:id', isAuthenticated, async (req, res) => {
       return res.redirect('/orders/freelancer');
     }
 
-    return res.status(400).send('Invalid action');
+    return res.status(400).render('400', {
+      title: 'Bad Request - CareFreelancer',
+      message: 'Invalid action. Please use the provided buttons to update order status.'
+    });
   } catch (err) {
     console.error('Update order status error:', err);
     return res.status(500).render('500', { title: 'Server Error' });

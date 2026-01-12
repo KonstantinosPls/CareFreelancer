@@ -26,6 +26,7 @@
           <!-- action="/auth/register" tells the browser where to send the data -->
           <!-- method="POST" means we're sending data to create something new -->
           <form id="registerForm" action="/auth/register" method="POST" novalidate>
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
             <!-- Username field -->
             <div class="mb-3">

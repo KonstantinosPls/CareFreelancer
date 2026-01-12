@@ -64,7 +64,8 @@
         <a href="javascript:history.back()" class="btn btn-outline-secondary">Back</a>
 
         <% if (user && user._id.toString() === order.clientId?._id?.toString() && order.status === 'pending') { %>
-          <form action="/orders/<%= order._id %>" method="POST" class="d-inline">
+          <form action="/orders/<%= order._id %>?_method=PATCH" method="POST" class="d-inline">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <input type="hidden" name="action" value="cancel">
             <button type="submit" class="btn btn-outline-danger">Cancel Order</button>
           </form>

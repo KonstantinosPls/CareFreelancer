@@ -6,6 +6,7 @@ const fs = require('fs');
 const { body, validationResult } = require('express-validator');
 const User = require('../models/User');
 const { isAuthenticated } = require('../middleware/auth');
+const { deleteFile } = require('../utils/fileUtils');
 
 // Configure Multer for file uploads
 // Multer handles multipart/form-data (forms with files)
@@ -143,11 +144,8 @@ router.post('/edit', isAuthenticated, upload.single('profileImage'), async (req,
     if (req.file) {
       // Delete old profile image if it exists
       const currentUser = await User.findById(userId);
-      if (currentUser.profileImage) {
-        const oldImagePath = path.join(__dirname, '..', currentUser.profileImage);
-        if (fs.existsSync(oldImagePath)) {
-          fs.unlinkSync(oldImagePath);  // Delete old file
-        }
+      if (currentUser && currentUser.profileImage) {
+        await deleteFile(currentUser.profileImage);
       }
 
       // Save new image path (relative to public folder for web access)

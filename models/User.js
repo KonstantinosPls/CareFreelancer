@@ -36,7 +36,29 @@ const userSchema = new mongoose.Schema({
   },
   skills: [{
     type: String
-  }]
+  }],
+  // Email verification fields
+  isEmailVerified: {
+    type: Boolean,
+    default: false
+  },
+  emailVerificationToken: {
+    type: String,
+    default: null
+  },
+  emailVerificationExpires: {
+    type: Date,
+    default: null
+  },
+  // Password reset fields
+  passwordResetToken: {
+    type: String,
+    default: null
+  },
+  passwordResetExpires: {
+    type: Date,
+    default: null
+  }
 }, {
   timestamps: true
 });

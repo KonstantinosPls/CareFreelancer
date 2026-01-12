@@ -123,7 +123,8 @@
 
               <td>
                 <% if (o.status === 'pending') { %>
-                  <form action="/orders/<%= o._id %>" method="POST" class="d-inline">
+                  <form action="/orders/<%= o._id %>?_method=PATCH" method="POST" class="d-inline">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                     <input type="hidden" name="action" value="cancel">
                     <button type="submit" class="btn btn-sm btn-outline-danger">
                       Cancel

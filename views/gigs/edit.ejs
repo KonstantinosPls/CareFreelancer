@@ -10,7 +10,20 @@
                         Update your gig details below
                     </p>
 
-                    <form action="/gigs/<%= gig._id %>" method="POST" enctype="multipart/form-data" id="editGigForm">
+                    <!-- Validation Errors -->
+                    <% if (typeof errors !== 'undefined' && errors && errors.length > 0) { %>
+                        <div class="alert alert-danger">
+                            <h6><i class="bi bi-exclamation-triangle"></i> Please fix the following errors:</h6>
+                            <ul class="mb-0">
+                                <% errors.forEach(error => { %>
+                                    <li><%= error.msg %></li>
+                                <% }) %>
+                            </ul>
+                        </div>
+                    <% } %>
+
+                    <form action="/gigs/<%= gig._id %>?_method=PUT" method="POST" enctype="multipart/form-data" id="editGigForm">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
                         <!-- Gig Title -->
                         <div class="mb-3">
@@ -115,18 +128,29 @@
                         </div>
 
                         <!-- Current Images -->
-                        <% if (gig.images && gig.images.length> 0) { %>
+                        <% if (gig.images && gig.images.length > 0) { %>
                             <div class="mb-3">
                                 <label class="form-label">Current Images</label>
+                                <small class="text-muted d-block mb-2">Check images you want to remove</small>
                                 <div class="row">
-                                    <% gig.images.forEach(image=> { %>
+                                    <% gig.images.forEach((image, index) => { %>
                                         <div class="col-md-3 mb-2">
-                                            <img src="<%= image %>" class="img-fluid rounded" alt="Gig image">
+                                            <div class="position-relative">
+                                                <img src="<%= image %>" class="img-fluid rounded" alt="Gig image">
+                                                <div class="form-check mt-1">
+                                                    <input class="form-check-input" type="checkbox"
+                                                        name="deleteImages" value="<%= image %>"
+                                                        id="deleteImg<%= index %>">
+                                                    <label class="form-check-label small text-danger" for="deleteImg<%= index %>">
+                                                        Remove
+                                                    </label>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <% }) %>
+                                    <% }) %>
                                 </div>
                             </div>
-                            <% } %>
+                        <% } %>
 
                                 <!-- Add More Images -->
                                 <div class="mb-4">

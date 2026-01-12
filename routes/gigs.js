@@ -2,8 +2,10 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const path = require('path');
+const { body, validationResult } = require('express-validator');
 const Gig = require('../models/Gig');
 const { isAuthenticated } = require('../middleware/auth');
+const { deleteFile, deleteFiles } = require('../utils/fileUtils');
 
 // Configure Multer for file upload
 const storage = multer.diskStorage({
@@ -55,10 +57,12 @@ router.get('/', async (req, res) => {
 // GET /gigs/search - Search results
 router.get('/search', async (req, res) => {
   try {
-    const query = req.query.q || '';
+    const query = (req.query.q || '').trim();
     const category = req.query.category || '';
     const tags = req.query.tags ? req.query.tags.split(',') : [];
-    const sortBy = req.query.sort || 'createdAt';
+    // Whitelist allowed sort fields to prevent injection
+    const allowedSortFields = ['createdAt', 'price', 'deliveryTime', 'title', 'category'];
+    const sortBy = allowedSortFields.includes(req.query.sort) ? req.query.sort : 'createdAt';
     const sortOrder = req.query.order === 'asc' ? 1 : -1;
     const page = parseInt(req.query.page) || 1;
     const perPage = 10;
@@ -67,10 +71,15 @@ router.get('/search', async (req, res) => {
     let filter = { status: 'active' };
 
     if (query) {
+      // Escape regex special characters to prevent regex injection
+      // and ensure literal matching of special chars like . + * etc.
+      const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
       filter.$or = [
-        { title: { $regex: query, $options: 'i' } },
-        { description: { $regex: query, $options: 'i' } },
-        { tags: { $regex: query, $options: 'i' } }
+        { title: { $regex: escapedQuery, $options: 'i' } },
+        { description: { $regex: escapedQuery, $options: 'i' } },
+        { category: { $regex: escapedQuery, $options: 'i' } },
+        { tags: { $regex: escapedQuery, $options: 'i' } }
       ];
     }
 
@@ -122,9 +131,41 @@ router.get('/create', isAuthenticated, (req, res) => {
   });
 });
 
+// Validation rules for gig creation/update
+const gigValidation = [
+  body('title')
+    .trim()
+    .notEmpty().withMessage('Title is required')
+    .isLength({ min: 5, max: 200 }).withMessage('Title must be between 5 and 200 characters'),
+  body('description')
+    .trim()
+    .notEmpty().withMessage('Description is required')
+    .isLength({ min: 20, max: 5000 }).withMessage('Description must be between 20 and 5000 characters'),
+  body('category')
+    .notEmpty().withMessage('Category is required')
+    .isIn(['Web Development', 'Graphic Design', 'Writing & Translation', 'Digital Marketing', 'Video & Animation'])
+    .withMessage('Please select a valid category'),
+  body('price')
+    .notEmpty().withMessage('Price is required')
+    .isFloat({ min: 5 }).withMessage('Price must be at least €5'),
+  body('deliveryTime')
+    .notEmpty().withMessage('Delivery time is required')
+    .isInt({ min: 1, max: 90 }).withMessage('Delivery time must be between 1 and 90 days')
+];
+
 // POST /gigs - Create new gig (protected)
-router.post('/', isAuthenticated, upload.array('images', 5), async (req, res) => {
+router.post('/', isAuthenticated, upload.array('images', 5), gigValidation, async (req, res) => {
   try {
+    // Check for validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).render('gigs/create', {
+        title: 'Create Gig',
+        errors: errors.array(),
+        formData: req.body
+      });
+    }
+
     const { title, description, category, price, deliveryTime, tags } = req.body;
 
     // Process tags (can be string or array)
@@ -194,7 +235,10 @@ router.get('/:id/edit', isAuthenticated, async (req, res) => {
 
     // Check if user owns this gig
     if (gig.freelancerId.toString() !== req.session.user._id.toString()) {
-      return res.status(403).send('Unauthorized');
+      return res.status(403).render('403', {
+        title: 'Unauthorized - CareFreelancer',
+        message: 'You do not have permission to modify this gig.'
+      });
     }
 
     res.render('gigs/edit', {
@@ -207,8 +251,8 @@ router.get('/:id/edit', isAuthenticated, async (req, res) => {
   }
 });
 
-// POST /gigs/:id - Update gig (protected)
-router.post('/:id', isAuthenticated, upload.array('images', 5), async (req, res) => {
+// PUT /gigs/:id - Update gig (protected)
+router.put('/:id', isAuthenticated, upload.array('images', 5), gigValidation, async (req, res) => {
   try {
     const gig = await Gig.findById(req.params.id);
 
@@ -218,10 +262,23 @@ router.post('/:id', isAuthenticated, upload.array('images', 5), async (req, res)
 
     // Check if user owns this gig
     if (gig.freelancerId.toString() !== req.session.user._id.toString()) {
-      return res.status(403).send('Unauthorized');
+      return res.status(403).render('403', {
+        title: 'Unauthorized - CareFreelancer',
+        message: 'You do not have permission to modify this gig.'
+      });
     }
 
-    const { title, description, category, price, deliveryTime, tags } = req.body;
+    // Check for validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).render('gigs/edit', {
+        title: 'Edit Gig',
+        gig: gig,
+        errors: errors.array()
+      });
+    }
+
+    const { title, description, category, price, deliveryTime, tags, deleteImages } = req.body;
 
     // Process tags
     let tagsArray = [];
@@ -236,6 +293,17 @@ router.post('/:id', isAuthenticated, upload.array('images', 5), async (req, res)
     gig.price = price;
     gig.deliveryTime = deliveryTime;
     gig.tags = tagsArray;
+
+    // Handle image deletion
+    if (deleteImages) {
+      const imagesToDelete = Array.isArray(deleteImages) ? deleteImages : [deleteImages];
+
+      // Delete files from filesystem
+      await deleteFiles(imagesToDelete);
+
+      // Remove deleted images from the gig's images array
+      gig.images = gig.images.filter(img => !imagesToDelete.includes(img));
+    }
 
     // Add new images if uploaded
     if (req.files && req.files.length > 0) {
@@ -252,8 +320,8 @@ router.post('/:id', isAuthenticated, upload.array('images', 5), async (req, res)
   }
 });
 
-// POST /gigs/:id/delete - Delete gig (soft delete)
-router.post('/:id/delete', isAuthenticated, async (req, res) => {
+// DELETE /gigs/:id - Delete gig (soft delete)
+router.delete('/:id', isAuthenticated, async (req, res) => {
   try {
     const gig = await Gig.findById(req.params.id);
 
@@ -263,7 +331,10 @@ router.post('/:id/delete', isAuthenticated, async (req, res) => {
 
     // Check if user owns this gig
     if (gig.freelancerId.toString() !== req.session.user._id.toString()) {
-      return res.status(403).send('Unauthorized');
+      return res.status(403).render('403', {
+        title: 'Unauthorized - CareFreelancer',
+        message: 'You do not have permission to modify this gig.'
+      });
     }
 
     // Soft delete - change status to 'deleted'

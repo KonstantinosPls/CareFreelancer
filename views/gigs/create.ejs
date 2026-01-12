@@ -10,6 +10,18 @@
             Fill in the details below to publish your service
           </p>
 
+          <!-- Validation Errors -->
+          <% if (typeof errors !== 'undefined' && errors && errors.length > 0) { %>
+            <div class="alert alert-danger">
+              <h6><i class="bi bi-exclamation-triangle"></i> Please fix the following errors:</h6>
+              <ul class="mb-0">
+                <% errors.forEach(error => { %>
+                  <li><%= error.msg %></li>
+                <% }) %>
+              </ul>
+            </div>
+          <% } %>
+
           <!--Success Message after a gig is submitted-->
           <% if (success===true) { %>
             <div class="alert alert-success text-center mt-4">
@@ -24,10 +36,11 @@
                 View my gigs
               </a>
             </div>
-            <% } %>
+          <% } %>
 
 
               <form action="/gigs" method="POST" enctype="multipart/form-data" id="gigForm">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
                 <!-- Gig Title -->
                 <div class="mb-3">

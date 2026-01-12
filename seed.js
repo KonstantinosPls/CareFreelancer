@@ -2,6 +2,8 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const fs = require('fs');
+const path = require('path');
 const User = require('./models/User');
 const Gig = require('./models/Gig');
 const Order = require('./models/Order');
@@ -11,10 +13,89 @@ mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log('Connected to MongoDB'))
     .catch(err => console.error('MongoDB connection error:', err));
 
+/**
+ * Copy sample images to uploads folder
+ * This ensures teammates have the same demo images when they run the seed
+ */
+const setupSampleImages = () => {
+    const sampleDir = path.join(__dirname, 'public', 'sample-images');
+    const uploadsDir = path.join(__dirname, 'public', 'uploads');
+
+    // Create upload directories if they don't exist
+    const dirs = [
+        path.join(uploadsDir, 'profiles'),
+        path.join(uploadsDir, 'gigs')
+    ];
+
+    dirs.forEach(dir => {
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+            console.log(`Created directory: ${dir}`);
+        }
+    });
+
+    // Copy sample profile images
+    const profileSampleDir = path.join(sampleDir, 'profiles');
+    const profileUploadDir = path.join(uploadsDir, 'profiles');
+
+    if (fs.existsSync(profileSampleDir)) {
+        const profileImages = fs.readdirSync(profileSampleDir);
+        profileImages.forEach(img => {
+            const src = path.join(profileSampleDir, img);
+            const dest = path.join(profileUploadDir, img);
+            if (!fs.existsSync(dest)) {
+                fs.copyFileSync(src, dest);
+                console.log(`Copied profile image: ${img}`);
+            }
+        });
+    }
+
+    // Copy sample gig images
+    const gigSampleDir = path.join(sampleDir, 'gigs');
+    const gigUploadDir = path.join(uploadsDir, 'gigs');
+
+    if (fs.existsSync(gigSampleDir)) {
+        const gigImages = fs.readdirSync(gigSampleDir);
+        gigImages.forEach(img => {
+            const src = path.join(gigSampleDir, img);
+            const dest = path.join(gigUploadDir, img);
+            if (!fs.existsSync(dest)) {
+                fs.copyFileSync(src, dest);
+                console.log(`Copied gig image: ${img}`);
+            }
+        });
+    }
+};
+
+/**
+ * Check if a sample image exists, return path or placeholder
+ */
+const getImagePath = (type, filename) => {
+    const localPath = `/uploads/${type}/${filename}`;
+    const fullPath = path.join(__dirname, 'public', localPath);
+
+    if (fs.existsSync(fullPath)) {
+        return localPath;
+    }
+
+    // Return placeholder image URLs if local images don't exist
+    // These are free placeholder services that work without setup
+    if (type === 'profiles') {
+        return `https://ui-avatars.com/api/?name=${filename.replace('.jpg', '')}&background=0d6efd&color=fff&size=200`;
+    } else {
+        // Placeholder for gig images
+        return `https://picsum.photos/seed/${filename}/600/400`;
+    }
+};
+
 const seedDatabase = async () => {
     try {
+        // Setup sample images first
+        console.log('Setting up sample images...');
+        setupSampleImages();
+
         // Clear existing data
-        console.log('Clearing existing data...');
+        console.log('\nClearing existing data...');
         await User.deleteMany({});
         await Gig.deleteMany({});
         await Order.deleteMany({});
@@ -30,7 +111,9 @@ const seedDatabase = async () => {
                 password: hashedPassword,
                 role: 'freelancer',
                 bio: 'Full-stack web developer with 5 years of experience',
-                skills: ['JavaScript', 'Node.js', 'React', 'MongoDB']
+                skills: ['JavaScript', 'Node.js', 'React', 'MongoDB'],
+                profileImage: getImagePath('profiles', 'john.jpg'),
+                isEmailVerified: true
             },
             {
                 username: 'jane_designer',
@@ -38,7 +121,9 @@ const seedDatabase = async () => {
                 password: hashedPassword,
                 role: 'freelancer',
                 bio: 'Creative graphic designer specializing in branding',
-                skills: ['Photoshop', 'Illustrator', 'Figma']
+                skills: ['Photoshop', 'Illustrator', 'Figma'],
+                profileImage: getImagePath('profiles', 'jane.jpg'),
+                isEmailVerified: true
             },
             {
                 username: 'mike_writer',
@@ -46,7 +131,9 @@ const seedDatabase = async () => {
                 password: hashedPassword,
                 role: 'freelancer',
                 bio: 'Professional content writer and translator',
-                skills: ['Content Writing', 'SEO', 'Translation']
+                skills: ['Content Writing', 'SEO', 'Translation'],
+                profileImage: getImagePath('profiles', 'mike.jpg'),
+                isEmailVerified: true
             },
             {
                 username: 'sarah_marketer',
@@ -54,20 +141,24 @@ const seedDatabase = async () => {
                 password: hashedPassword,
                 role: 'freelancer',
                 bio: 'Digital marketing expert with proven ROI',
-                skills: ['SEO', 'Social Media', 'Google Ads']
+                skills: ['SEO', 'Social Media', 'Google Ads'],
+                profileImage: getImagePath('profiles', 'sarah.jpg'),
+                isEmailVerified: true
             },
             {
                 username: 'tom_client',
                 email: 'tom@example.com',
                 password: hashedPassword,
                 role: 'client',
-                bio: 'Looking for quality freelancers'
+                bio: 'Looking for quality freelancers',
+                profileImage: getImagePath('profiles', 'tom.jpg'),
+                isEmailVerified: true
             }
         ]);
 
         console.log(`Created ${users.length} users`);
 
-        // Create gigs
+        // Create gigs with sample images
         console.log('Creating gigs...');
         const gigs = await Gig.insertMany([
             {
@@ -78,7 +169,7 @@ const seedDatabase = async () => {
                 deliveryTime: 7,
                 freelancerId: users[0]._id,
                 tags: ['React', 'Node.js', 'JavaScript'],
-                images: [],
+                images: [getImagePath('gigs', 'react-website.jpg')],
                 status: 'active'
             },
             {
@@ -89,7 +180,7 @@ const seedDatabase = async () => {
                 deliveryTime: 5,
                 freelancerId: users[1]._id,
                 tags: ['Logo Design', 'Branding'],
-                images: [],
+                images: [getImagePath('gigs', 'logo-design.jpg')],
                 status: 'active'
             },
             {
@@ -100,7 +191,7 @@ const seedDatabase = async () => {
                 deliveryTime: 14,
                 freelancerId: users[0]._id,
                 tags: ['Node.js', 'React', 'HTML/CSS'],
-                images: [],
+                images: [getImagePath('gigs', 'ecommerce.jpg')],
                 status: 'active'
             },
             {
@@ -111,7 +202,7 @@ const seedDatabase = async () => {
                 deliveryTime: 3,
                 freelancerId: users[2]._id,
                 tags: ['SEO', 'Content Writing'],
-                images: [],
+                images: [getImagePath('gigs', 'blog-writing.jpg')],
                 status: 'active'
             },
             {
@@ -122,7 +213,7 @@ const seedDatabase = async () => {
                 deliveryTime: 30,
                 freelancerId: users[3]._id,
                 tags: ['Social Media', 'Content Creation'],
-                images: [],
+                images: [getImagePath('gigs', 'social-media.jpg')],
                 status: 'active'
             },
             {
@@ -133,7 +224,7 @@ const seedDatabase = async () => {
                 deliveryTime: 7,
                 freelancerId: users[1]._id,
                 tags: ['UI Design', 'UX Design', 'Figma'],
-                images: [],
+                images: [getImagePath('gigs', 'ui-ux.jpg')],
                 status: 'active'
             },
             {
@@ -144,7 +235,7 @@ const seedDatabase = async () => {
                 deliveryTime: 5,
                 freelancerId: users[0]._id,
                 tags: ['Node.js', 'JavaScript', 'API'],
-                images: [],
+                images: [getImagePath('gigs', 'api-dev.jpg')],
                 status: 'active'
             },
             {
@@ -155,7 +246,7 @@ const seedDatabase = async () => {
                 deliveryTime: 4,
                 freelancerId: users[2]._id,
                 tags: ['Translation', 'Languages'],
-                images: [],
+                images: [getImagePath('gigs', 'translation.jpg')],
                 status: 'active'
             },
             {
@@ -166,7 +257,7 @@ const seedDatabase = async () => {
                 deliveryTime: 30,
                 freelancerId: users[3]._id,
                 tags: ['Google Ads', 'PPC', 'Marketing'],
-                images: [],
+                images: [getImagePath('gigs', 'google-ads.jpg')],
                 status: 'active'
             },
             {
@@ -177,7 +268,7 @@ const seedDatabase = async () => {
                 deliveryTime: 4,
                 freelancerId: users[0]._id,
                 tags: ['HTML/CSS', 'JavaScript', 'Landing Page'],
-                images: [],
+                images: [getImagePath('gigs', 'landing-page.jpg')],
                 status: 'active'
             },
             {
@@ -188,7 +279,7 @@ const seedDatabase = async () => {
                 deliveryTime: 3,
                 freelancerId: users[1]._id,
                 tags: ['Print Design', 'Business Cards'],
-                images: [],
+                images: [getImagePath('gigs', 'print-design.jpg')],
                 status: 'active'
             },
             {
@@ -199,7 +290,7 @@ const seedDatabase = async () => {
                 deliveryTime: 7,
                 freelancerId: users[2]._id,
                 tags: ['Technical Writing', 'Documentation'],
-                images: [],
+                images: [getImagePath('gigs', 'tech-docs.jpg')],
                 status: 'active'
             },
             {
@@ -210,7 +301,7 @@ const seedDatabase = async () => {
                 deliveryTime: 10,
                 freelancerId: users[3]._id,
                 tags: ['SEO', 'Website Optimization'],
-                images: [],
+                images: [getImagePath('gigs', 'seo.jpg')],
                 status: 'active'
             },
             {
@@ -221,7 +312,7 @@ const seedDatabase = async () => {
                 deliveryTime: 6,
                 freelancerId: users[0]._id,
                 tags: ['HTML/CSS', 'JavaScript', 'Portfolio'],
-                images: [],
+                images: [getImagePath('gigs', 'portfolio.jpg')],
                 status: 'active'
             },
             {
@@ -232,7 +323,7 @@ const seedDatabase = async () => {
                 deliveryTime: 10,
                 freelancerId: users[1]._id,
                 tags: ['Animation', 'Video Production'],
-                images: [],
+                images: [getImagePath('gigs', 'animation.jpg')],
                 status: 'active'
             }
         ]);
@@ -268,12 +359,17 @@ const seedDatabase = async () => {
         console.log(`Created ${orders.length} orders`);
 
         console.log('\n✅ Database seeded successfully!');
-        console.log(`\nTest accounts (password: password123):`);
-        console.log('- john_dev@example.com (freelancer)');
-        console.log('- jane_designer@example.com (freelancer)');
-        console.log('- mike_writer@example.com (freelancer)');
-        console.log('- sarah_marketer@example.com (freelancer)');
-        console.log('- tom_client@example.com (client)');
+        console.log('\n📸 Note: Images are using placeholder URLs.');
+        console.log('   To use custom images, add them to:');
+        console.log('   - public/sample-images/profiles/ (for profile photos)');
+        console.log('   - public/sample-images/gigs/ (for gig images)');
+        console.log('   Then re-run: node seed.js\n');
+        console.log('Test accounts (password: password123):');
+        console.log('- john@example.com (freelancer)');
+        console.log('- jane@example.com (freelancer)');
+        console.log('- mike@example.com (freelancer)');
+        console.log('- sarah@example.com (freelancer)');
+        console.log('- tom@example.com (client)');
 
         process.exit(0);
     } catch (error) {
