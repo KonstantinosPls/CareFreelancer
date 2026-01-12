@@ -1,0 +1,98 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<main class="container mt-5">
+
+  <h1 class="mb-3">Orders Received</h1>
+  <p class="text-muted">All orders clients placed on your gigs.</p>
+
+  <p class="mb-4">
+    <strong><%= orders ? orders.length : 0 %></strong> orders found
+  </p>
+
+  <% if (!orders || orders.length === 0) { %>
+    <div class="border rounded bg-info-subtle text-center p-4">
+      <h4 class="mb-3">No orders yet</h4>
+      <p class="mb-0">When clients order your gigs, they will appear here.</p>
+      <a href="/gigs/create" class="btn btn-outline-primary mt-3">Post a Gig</a>
+    </div>
+  <% } else { %>
+
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover align-middle">
+        <thead class="table-light">
+          <tr>
+            <th class="text-decoration-underline" style="cursor:pointer">
+              Gig <span class="ms-1">↕</span>
+            </th>
+            <th class="text-decoration-underline" style="cursor:pointer">
+              Client <span class="ms-1">↕</span>
+            </th>
+            <th class="text-decoration-underline" style="cursor:pointer">
+              Status <span class="ms-1">↕</span>
+            </th>
+            <th class="text-decoration-underline" style="cursor:pointer">
+              Total (€) <span class="ms-1">↕</span>
+            </th>
+            <th class="text-decoration-underline" style="cursor:pointer">
+              Ordered <span class="ms-1">↕</span>
+            </th>
+            <th class="text-decoration-underline" style="cursor:pointer">
+              Delivery Date <span class="ms-1">↕</span>
+            </th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <% orders.forEach(o => { %>
+            <tr>
+              <td><%= o.gigId?.title || 'Gig' %></td>
+              <td><%= o.clientId?.username || 'Client' %></td>
+
+              <td>
+                <% if (o.status === 'pending') { %>
+                  <span class="badge bg-warning text-dark">pending</span>
+                <% } else if (o.status === 'in-progress') { %>
+                  <span class="badge bg-primary">in-progress</span>
+                <% } else if (o.status === 'completed') { %>
+                  <span class="badge bg-success">completed</span>
+                <% } else { %>
+                  <span class="badge bg-secondary">cancelled</span>
+                <% } %>
+              </td>
+
+              <td><%= o.totalPrice %></td>
+              <td><%= new Date(o.createdAt).toLocaleDateString('en-GB') %></td>
+              <td><%= new Date(o.deliveryDate).toLocaleDateString('en-GB') %></td>
+
+              <td>
+                <% if (o.status === 'pending') { %>
+                  <form action="/orders/<%= o._id %>" method="POST" class="d-inline">
+                    <input type="hidden" name="action" value="start">
+                    <button type="submit" class="btn btn-sm btn-outline-primary">
+                      Start
+                    </button>
+                  </form>
+                <% } else if (o.status === 'in-progress') { %>
+                  <form action="/orders/<%= o._id %>" method="POST" class="d-inline">
+                    <input type="hidden" name="action" value="complete">
+                    <button type="submit" class="btn btn-sm btn-outline-success">
+                      Complete
+                    </button>
+                  </form>
+                <% } else { %>
+                  <span class="text-muted">—</span>
+                <% } %>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+
+  <% } %>
+
+</main>
+
+<%- include('../partials/footer') %>

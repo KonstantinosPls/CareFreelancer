@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const Gig = require('../models/Gig');
 
 //placeholder routes for gigs in phase 3 of the plan
 
@@ -38,10 +39,27 @@ router.post('/', (req, res) => {
   res.redirect('/gigs/create');
 });
 
-//GET/gigs/:id - Show gig details
-router.get('/:id', (req, res) => {
-  res.send('Gig details page not implemented yet');
+// GET /gigs/:id - Show gig details
+router.get('/:id', async (req, res) => {
+  try {
+    const gig = await Gig.findById(req.params.id)
+      .populate('freelancerId', 'username profileImage bio skills')
+      .lean();
+
+    if (!gig || gig.status === 'deleted') {
+      return res.status(404).render('404', { title: 'Gig Not Found' });
+    }
+
+    res.render('gigs/details', {
+      title: `${gig.title} - CareFreelancer`,
+      gig
+    });
+  } catch (err) {
+    console.error('Gig details error:', err);
+    return res.status(500).render('500', { title: 'Server Error' });
+  }
 });
+
 
 //GET/gigs/:id/edit - Show edit gig form
 router.get('/:id/edit', (req, res) => {

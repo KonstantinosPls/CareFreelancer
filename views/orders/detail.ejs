@@ -1,0 +1,79 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<main class="container mt-5">
+
+  <h1 class="mb-3">Order Details</h1>
+  <p class="text-muted">View full order information.</p>
+
+  <div class="card shadow">
+    <div class="card-body">
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label text-muted">Gig</label>
+          <p class="mb-0"><%= order.gigId?.title || 'Gig' %></p>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label class="form-label text-muted">Status</label>
+          <p class="mb-0">
+            <% if (order.status === 'pending') { %>
+              <span class="badge bg-warning text-dark">pending</span>
+            <% } else if (order.status === 'in-progress') { %>
+              <span class="badge bg-primary">in-progress</span>
+            <% } else if (order.status === 'completed') { %>
+              <span class="badge bg-success">completed</span>
+            <% } else { %>
+              <span class="badge bg-secondary">cancelled</span>
+            <% } %>
+          </p>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label class="form-label text-muted">Client</label>
+          <p class="mb-0"><%= order.clientId?.username || 'Client' %></p>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label class="form-label text-muted">Freelancer</label>
+          <p class="mb-0"><%= order.freelancerId?.username || 'Freelancer' %></p>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label class="form-label text-muted">Total (€)</label>
+          <p class="mb-0"><%= order.totalPrice %></p>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label class="form-label text-muted">Delivery Date</label>
+          <p class="mb-0"><%= new Date(order.deliveryDate).toLocaleDateString('en-GB') %></p>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="mb-3">
+        <label class="form-label text-muted">Requirements</label>
+        <div class="border rounded p-3 bg-light">
+          <%= order.requirements %>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-between">
+        <a href="javascript:history.back()" class="btn btn-outline-secondary">Back</a>
+
+        <% if (user && user._id.toString() === order.clientId?._id?.toString() && order.status === 'pending') { %>
+          <form action="/orders/<%= order._id %>" method="POST" class="d-inline">
+            <input type="hidden" name="action" value="cancel">
+            <button type="submit" class="btn btn-outline-danger">Cancel Order</button>
+          </form>
+        <% } %>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<%- include('../partials/footer') %>
