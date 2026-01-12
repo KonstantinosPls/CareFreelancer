@@ -1,0 +1,166 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<main class="container mt-5">
+
+  <!-- Page Title -->
+  <h1 class="mb-3">My Orders</h1>
+  <p class="text-muted">
+    All orders you’ve placed as a client.
+  </p>
+
+  <!-- Count -->
+  <p class="mb-4">
+    <strong><%= orders ? orders.length : 0 %></strong> orders found
+  </p>
+
+  <!-- Filtering (UI only - optional) -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <h5 class="mb-3">Filter Orders</h5>
+
+      <div class="row">
+        <!-- Status filter -->
+        <div class="col-md-4">
+          <label class="form-label">Status</label>
+          <select class="form-select">
+            <option selected>All</option>
+            <option>pending</option>
+            <option>in-progress</option>
+            <option>completed</option>
+            <option>cancelled</option>
+          </select>
+        </div>
+
+        <!-- Sort filter -->
+        <div class="col-md-4">
+          <label class="form-label">Sort</label>
+          <select class="form-select">
+            <option selected>Newest</option>
+            <option>Oldest</option>
+            <option>Price (Low → High)</option>
+            <option>Price (High → Low)</option>
+          </select>
+        </div>
+
+        <!-- Clear Filters -->
+        <div class="col-md-4 d-flex align-items-end">
+          <button class="btn btn-outline-secondary w-100" disabled>
+            Clear Filters
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <% if (!orders || orders.length === 0) { %>
+    <div class="border rounded bg-info-subtle text-center p-4">
+      <h4 class="mb-3">No orders yet</h4>
+      <p class="mb-0">
+        Browse gigs and place your first order.
+      </p>
+      <a href="/gigs" class="btn btn-outline-primary mt-3">Browse Gigs</a>
+    </div>
+  <% } else { %>
+
+    <!-- Results Table -->
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover align-middle">
+
+        <thead class="table-light">
+          <tr>
+            <th class="text-decoration-underline" style="cursor:pointer">
+              Gig <span class="ms-1">↕</span>
+            </th>
+
+            <th class="text-decoration-underline" style="cursor:pointer">
+              Freelancer <span class="ms-1">↕</span>
+            </th>
+
+            <th class="text-decoration-underline" style="cursor:pointer">
+              Status <span class="ms-1">↕</span>
+            </th>
+
+            <th class="text-decoration-underline" style="cursor:pointer">
+              Total (€) <span class="ms-1">↕</span>
+            </th>
+
+            <th class="text-decoration-underline" style="cursor:pointer">
+              Ordered <span class="ms-1">↕</span>
+            </th>
+
+            <th class="text-decoration-underline" style="cursor:pointer">
+              Delivery Date <span class="ms-1">↕</span>
+            </th>
+
+            <th>
+              Action
+            </th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <% orders.forEach(o => { %>
+            <tr>
+              <td><%= o.gigId?.title || 'Gig' %></td>
+              <td><%= o.freelancerId?.username || 'Freelancer' %></td>
+
+              <td>
+                <% if (o.status === 'pending') { %>
+                  <span class="badge bg-warning text-dark">pending</span>
+                <% } else if (o.status === 'in-progress') { %>
+                  <span class="badge bg-primary">in-progress</span>
+                <% } else if (o.status === 'completed') { %>
+                  <span class="badge bg-success">completed</span>
+                <% } else { %>
+                  <span class="badge bg-secondary">cancelled</span>
+                <% } %>
+              </td>
+
+              <td><%= o.totalPrice %></td>
+              <td><%= new Date(o.createdAt).toLocaleDateString('en-GB') %></td>
+              <td><%= new Date(o.deliveryDate).toLocaleDateString('en-GB') %></td>
+
+              <td>
+                <% if (o.status === 'pending') { %>
+                  <form action="/orders/<%= o._id %>" method="POST" class="d-inline">
+                    <input type="hidden" name="action" value="cancel">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                      Cancel
+                    </button>
+                  </form>
+                <% } else { %>
+                  <span class="text-muted">—</span>
+                <% } %>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+
+      </table>
+    </div>
+
+    <!-- Pagination (UI only for now) -->
+    <ul class="pagination justify-content-center">
+      <li class="page-item disabled">
+        <span class="page-link">Previous</span>
+      </li>
+
+      <li class="page-item active">
+        <span class="page-link">1</span>
+      </li>
+
+      <li class="page-item">
+        <a class="page-link" href="#">2</a>
+      </li>
+
+      <li class="page-item">
+        <a class="page-link" href="#">Next</a>
+      </li>
+    </ul>
+
+  <% } %>
+
+</main>
+
+<%- include('../partials/footer') %>

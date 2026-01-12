@@ -1,0 +1,46 @@
+<!-- Order Section -->
+<div class="card shadow mt-4">
+  <div class="card-body">
+    <h5 class="mb-2">Order this Gig</h5>
+    <p class="text-muted mb-3">
+      Tell the freelancer what you need (min 10 characters).
+    </p>
+
+    <% if (!user) { %>
+      <div class="alert alert-info mb-0">
+        Please <a href="/auth/login">login</a> to place an order.
+      </div>
+
+    <% } else if (user.role === 'client' || user.role === 'both') { %>
+
+      <form action="/orders" method="POST">
+        <!-- IMPORTANT: these names must match your POST /orders code -->
+        <input type="hidden" name="gigId" value="<%= gig._id %>">
+
+        <div class="mb-3">
+          <label class="form-label">Requirements</label>
+          <textarea
+            class="form-control"
+            name="requirements"
+            rows="4"
+            minlength="10"
+            required
+            placeholder="Example: I need a modern landing page for a coffee shop, 1 page, mobile friendly..."
+          ></textarea>
+          <small class="text-muted">Minimum 10 characters</small>
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+          Place Order
+        </button>
+      </form>
+
+    <% } else { %>
+
+      <div class="alert alert-warning mb-0">
+        Only clients can place orders.
+      </div>
+
+    <% } %>
+  </div>
+</div>
