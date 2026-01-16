@@ -1,0 +1,44 @@
+# Define the services (containers) we need
+services:
+
+  # Service 1: MongoDB Database
+  mongo:
+    image: mongo:7.0                    # Use official MongoDB image
+    container_name: carefreelancer-db   # Name for the container
+    restart: unless-stopped             # Auto-restart if it crashes
+    volumes:
+      - mongo_data:/data/db             # Persist data even if container is deleted
+    networks:
+      - app-network                     # Connect to our private network
+
+  # Service 2: Our Node.js Application
+  app:
+    build: .                            # Build from Dockerfile in current directory
+    container_name: carefreelancer-app  # Name for the container
+    restart: unless-stopped             # Auto-restart if it crashes
+    ports:
+      - "3000:3000"                     # Map host port 3000 to container port 3000
+    environment:                        # Environment variables (instead of .env file)
+      - NODE_ENV=development
+      - PORT=3000
+      - MONGODB_URI=mongodb://mongo:27017/carefreelancer
+      - SESSION_SECRET=your-super-secret-session-key-change-this
+      - SMTP_HOST=sandbox.smtp.mailtrap.io
+      - SMTP_PORT=2525
+      - SMTP_USER=cfff645aafcccf
+      - SMTP_PASS=9f2293b303dc8d
+      - SMTP_FROM=noreply@carefreelancer.example
+      - APP_URL=http://localhost:3000
+    depends_on:
+      - mongo                           # Wait for MongoDB to start first
+    networks:
+      - app-network                     # Same network as MongoDB
+
+# Define persistent storage
+volumes:
+  mongo_data:                           # Named volume for MongoDB data
+
+# Define private network for containers to communicate
+networks:
+  app-network:
+    driver: bridge

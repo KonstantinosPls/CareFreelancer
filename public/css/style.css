@@ -1,4 +1,4 @@
-/*general */
+/* General */
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   min-height: 100vh;
@@ -24,7 +24,7 @@ main {
 
 .card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 }
 
 /* Button style */
@@ -38,27 +38,288 @@ main {
   box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
 }
 
-/* messages */
+/* Messages */
 .alert {
   margin-top: 1rem;
 }
 
-/* hompeage jumbotron */
-.jumbotron {
-  background-color: #f8f9fa;
-}
+/* ==========================================
+   FOOTER STYLES
+   ========================================== */
 
-/* footer */
-footer {
+.site-footer {
   margin-top: auto;
-  padding: 2rem 0;
-  background-color: #f8f9fa;
-  border-top: 1px solid #dee2e6;
 }
 
-/* media screen for possible mobile use */
+.footer-links li {
+  margin-bottom: 0.5rem;
+}
+
+.footer-links a,
+.site-footer a {
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.footer-links a:hover,
+.site-footer a:hover {
+  opacity: 1 !important;
+  color: #fff !important;
+}
+
+.social-links a {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  display: inline-block;
+}
+
+.social-links a:hover {
+  opacity: 1 !important;
+  transform: translateY(-2px);
+}
+
+/* ==========================================
+   COOKIE CONSENT BANNER
+   ========================================== */
+
+.cookie-consent {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #1a1a2e;
+  color: #fff;
+  padding: 1rem 0;
+  z-index: 9999;
+  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.cookie-consent .cookie-text {
+  font-size: 0.9rem;
+}
+
+.cookie-consent a {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.cookie-consent a:hover {
+  color: #ccc;
+}
+
+/* ==========================================
+   HERO SECTION STYLES
+   ========================================== */
+
+.hero-section {
+  position: relative;
+  height: 80vh;
+  min-height: 500px;
+  max-height: 700px;
+  overflow: hidden;
+}
+
+.hero-slide {
+  height: 80vh;
+  min-height: 500px;
+  max-height: 700px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.4) 100%);
+  z-index: 1;
+}
+
+.hero-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  width: 100%;
+  padding: 0 1rem;
+}
+
+.hero-title {
+  font-size: 3rem;
+  font-weight: 700;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.hero-subtitle {
+  font-size: 1.25rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.hero-search {
+  max-width: 600px;
+}
+
+.hero-search .form-control {
+  border-radius: 50px 0 0 50px;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  font-size: 1rem;
+}
+
+.hero-search .btn {
+  border-radius: 0 50px 50px 0;
+  padding: 0.75rem 1.5rem;
+}
+
+.category-pills .btn {
+  border-width: 2px;
+  font-weight: 500;
+}
+
+.category-pills .btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Carousel fade effect */
+#heroCarousel .carousel-item {
+  transition: opacity 1s ease-in-out;
+}
+
+/* ==========================================
+   CATEGORIES SECTION STYLES
+   ========================================== */
+
+.categories-section {
+  background-color: #fff;
+}
+
+.category-card .card {
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.category-card:hover .card {
+  transform: translateY(-8px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.category-icon {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0d6efd 0%, #0099ff 100%);
+  border-radius: 50%;
+  color: white;
+  font-size: 1.5rem;
+}
+
+.category-card:hover .category-icon {
+  transform: scale(1.1);
+  transition: transform 0.3s ease;
+}
+
+.category-card .card-title {
+  color: #333;
+  font-weight: 600;
+}
+
+/* ==========================================
+   HOW IT WORKS SECTION STYLES
+   ========================================== */
+
+.how-it-works-section {
+  background-color: #f8f9fa;
+}
+
+.step-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e7f1ff;
+  border-radius: 50%;
+  color: #0d6efd;
+  font-size: 2rem;
+}
+
+/* ==========================================
+   STATS SECTION STYLES
+   ========================================== */
+
+.stats-section {
+  background-color: #fff;
+}
+
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.stat-item {
+  padding: 1rem;
+}
+
+/* ==========================================
+   RESPONSIVE STYLES
+   ========================================== */
+
 @media (max-width: 768px) {
   .navbar-brand {
     font-size: 1.2rem;
+  }
+
+  .hero-section {
+    height: 90vh;
+    max-height: none;
+  }
+
+  .hero-slide {
+    height: 90vh;
+    max-height: none;
+  }
+
+  .hero-title {
+    font-size: 2rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+
+  .hero-search .form-control {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+  }
+
+  .hero-search .btn {
+    padding: 0.5rem 1rem;
+  }
+
+  .category-pills .btn {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.75rem;
+  }
+
+  .stat-number {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .hero-title {
+    font-size: 1.75rem;
+  }
+
+  .category-pills span {
+    display: block;
+    margin-bottom: 0.5rem;
   }
 }

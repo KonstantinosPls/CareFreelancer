@@ -23,8 +23,7 @@
 
           <!-- Profile edit form -->
           <!-- enctype="multipart/form-data" is required for file uploads or files will not be sent to the server correctly -->
-          <form action="/profile/edit" method="POST" enctype="multipart/form-data" id="editProfileForm">
-            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <form action="/profile/edit?_csrf=<%= csrfToken %>" method="POST" enctype="multipart/form-data" id="editProfileForm">
 
             <!-- Current profile photo preview -->
             <div class="mb-4 text-center">

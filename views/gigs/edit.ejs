@@ -22,8 +22,7 @@
                         </div>
                     <% } %>
 
-                    <form action="/gigs/<%= gig._id %>?_method=PUT" method="POST" enctype="multipart/form-data" id="editGigForm">
-                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <form action="/gigs/<%= gig._id %>?_method=PUT&_csrf=<%= csrfToken %>" method="POST" enctype="multipart/form-data" id="editGigForm">
 
                         <!-- Gig Title -->
                         <div class="mb-3">

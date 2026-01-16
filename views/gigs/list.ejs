@@ -2,7 +2,7 @@
   <%- include('../partials/navbar') %>
 
     <main class="container mt-5">
-      <h1 class="mb-4">Browse Gigs</h1>
+      <h1 class="mb-4"><%= typeof isMyGigs !== 'undefined' && isMyGigs ? 'My Gigs' : 'Browse Gigs' %></h1>
 
       <% if (gigs && gigs.length> 0) { %>
         <div class="row">
@@ -43,11 +43,17 @@
         </div>
         <% } else { %>
           <div class="alert alert-info text-center">
-            <h4>No gigs available yet</h4>
-            <p>Be the first to create a gig!</p>
-            <% if (user && (user.role==='freelancer' || user.role==='both' )) { %>
+            <% if (typeof isMyGigs !== 'undefined' && isMyGigs) { %>
+              <h4>You haven't created any gigs yet</h4>
+              <p>Start offering your services by creating your first gig!</p>
               <a href="/gigs/create" class="btn btn-primary">Create a Gig</a>
+            <% } else { %>
+              <h4>No gigs available yet</h4>
+              <p>Be the first to create a gig!</p>
+              <% if (user && (user.role==='freelancer' || user.role==='both' )) { %>
+                <a href="/gigs/create" class="btn btn-primary">Create a Gig</a>
               <% } %>
+            <% } %>
           </div>
           <% } %>
     </main>

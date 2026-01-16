@@ -26,7 +26,8 @@ const isFreelancer = (req, res, next) => {
 
   res.status(403).render('403', {
     title: 'Access Denied - CareFreelancer',
-    message: 'This action is only available to freelancers. Your current role is "client".'
+    message: 'This action is only available to freelancers. Your current role is "client".',
+    user: req.session?.user || null
   });
 };
 
@@ -43,7 +44,8 @@ const isClient = (req, res, next) => {
 
   res.status(403).render('403', {
     title: 'Access Denied - CareFreelancer',
-    message: 'This action is only available to clients. Your current role is "freelancer".'
+    message: 'This action is only available to clients. Your current role is "freelancer".',
+    user: req.session?.user || null
   });
 };
 

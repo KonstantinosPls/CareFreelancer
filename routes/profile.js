@@ -76,7 +76,7 @@ router.get('/', isAuthenticated, async (req, res) => {
 
   } catch (error) {
     console.error('Profile view error:', error);
-    res.status(500).render('500', { title: 'Server Error' });
+    res.status(500).render('500', { title: 'Server Error', user: req.session?.user || null });
   }
 });
 
@@ -108,7 +108,7 @@ router.get('/edit', isAuthenticated, async (req, res) => {
 
   } catch (error) {
     console.error('Edit profile view error:', error);
-    res.status(500).render('500', { title: 'Server Error' });
+    res.status(500).render('500', { title: 'Server Error', user: req.session?.user || null });
   }
 });
 

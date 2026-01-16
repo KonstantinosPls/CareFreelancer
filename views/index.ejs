@@ -1,54 +1,237 @@
 <%- include('partials/header') %>
+<!-- Hide navbar search initially on homepage, show when scrolled -->
+<style>
+  .navbar-search {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+  .navbar-search.visible {
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+</style>
 <%- include('partials/navbar') %>
 
-<main class="container mt-5">
-  <div class="jumbotron bg-light p-5 rounded">
-    <h1 class="display-4">Welcome to CareFreelancer</h1>
-    <p class="lead">Connect with talented freelancers or offer your services to clients worldwide.</p>
-    <hr class="my-4">
-    <p>Browse thousands of gigs or start selling your skills today.</p>
-    <div class="mt-4">
+<!-- Hero Section with Carousel Background -->
+<section class="hero-section position-relative">
+  <!-- Background Carousel -->
+  <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000">
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1920&q=80');"></div>
+      </div>
+      <div class="carousel-item">
+        <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1920&q=80');"></div>
+      </div>
+      <div class="carousel-item">
+        <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1553877522-43269d4ea984?w=1920&q=80');"></div>
+      </div>
+      <div class="carousel-item">
+        <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=1920&q=80');"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dark Overlay -->
+  <div class="hero-overlay"></div>
+
+  <!-- Hero Content -->
+  <div class="hero-content">
+    <div class="container text-center text-white">
+      <h1 class="hero-title mb-3">Find the perfect freelancer for your project</h1>
+      <p class="hero-subtitle mb-4">Connect with talented professionals ready to bring your ideas to life</p>
+
+      <!-- Search Bar -->
+      <form action="/gigs/search" method="GET" class="hero-search search-form mx-auto mb-4">
+        <div class="input-group input-group-lg">
+          <input type="search" name="q" class="form-control" placeholder="Search for any service..." aria-label="Search" required>
+          <button class="btn btn-success px-4" type="submit">
+            <i class="bi bi-search"></i> Search
+          </button>
+        </div>
+      </form>
+
+      <!-- Category Pills -->
+      <div class="category-pills">
+        <span class="text-white-50 me-2">Popular:</span>
+        <a href="/gigs/search?category=Web+Development" class="btn btn-outline-light btn-sm rounded-pill me-2 mb-2">Web Development</a>
+        <a href="/gigs/search?category=Graphic+Design" class="btn btn-outline-light btn-sm rounded-pill me-2 mb-2">Graphic Design</a>
+        <a href="/gigs/search?category=Writing+%26+Translation" class="btn btn-outline-light btn-sm rounded-pill me-2 mb-2">Writing & Translation</a>
+        <a href="/gigs/search?category=Digital+Marketing" class="btn btn-outline-light btn-sm rounded-pill me-2 mb-2">Digital Marketing</a>
+        <a href="/gigs/search?category=Video+%26+Animation" class="btn btn-outline-light btn-sm rounded-pill mb-2">Video & Animation</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Categories Section -->
+<section class="categories-section py-5">
+  <div class="container">
+    <h2 class="text-center mb-4">Explore Categories</h2>
+    <div class="row g-4">
+      <div class="col-6 col-md-4 col-lg">
+        <a href="/gigs/search?category=Web+Development" class="category-card text-decoration-none">
+          <div class="card h-100 text-center border-0 shadow-sm">
+            <div class="card-body">
+              <div class="category-icon mb-3">
+                <i class="bi bi-code-slash"></i>
+              </div>
+              <h6 class="card-title mb-0">Web Development</h6>
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="col-6 col-md-4 col-lg">
+        <a href="/gigs/search?category=Graphic+Design" class="category-card text-decoration-none">
+          <div class="card h-100 text-center border-0 shadow-sm">
+            <div class="card-body">
+              <div class="category-icon mb-3">
+                <i class="bi bi-palette"></i>
+              </div>
+              <h6 class="card-title mb-0">Graphic Design</h6>
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="col-6 col-md-4 col-lg">
+        <a href="/gigs/search?category=Writing+%26+Translation" class="category-card text-decoration-none">
+          <div class="card h-100 text-center border-0 shadow-sm">
+            <div class="card-body">
+              <div class="category-icon mb-3">
+                <i class="bi bi-pencil-square"></i>
+              </div>
+              <h6 class="card-title mb-0">Writing & Translation</h6>
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="col-6 col-md-4 col-lg">
+        <a href="/gigs/search?category=Digital+Marketing" class="category-card text-decoration-none">
+          <div class="card h-100 text-center border-0 shadow-sm">
+            <div class="card-body">
+              <div class="category-icon mb-3">
+                <i class="bi bi-graph-up-arrow"></i>
+              </div>
+              <h6 class="card-title mb-0">Digital Marketing</h6>
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="col-6 col-md-4 col-lg">
+        <a href="/gigs/search?category=Video+%26+Animation" class="category-card text-decoration-none">
+          <div class="card h-100 text-center border-0 shadow-sm">
+            <div class="card-body">
+              <div class="category-icon mb-3">
+                <i class="bi bi-camera-video"></i>
+              </div>
+              <h6 class="card-title mb-0">Video & Animation</h6>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="how-it-works-section py-5 bg-light">
+  <div class="container">
+    <h2 class="text-center mb-5">How It Works</h2>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="text-center">
+          <div class="step-icon mb-3">
+            <i class="bi bi-person-plus"></i>
+          </div>
+          <h5>1. Create an Account</h5>
+          <p class="text-muted">Sign up as a freelancer, client, or both. It's free and takes just a minute.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="text-center">
+          <div class="step-icon mb-3">
+            <i class="bi bi-search"></i>
+          </div>
+          <h5>2. Find or Post Services</h5>
+          <p class="text-muted">Browse thousands of gigs or create your own to showcase your skills.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="text-center">
+          <div class="step-icon mb-3">
+            <i class="bi bi-briefcase"></i>
+          </div>
+          <h5>3. Get Work Done</h5>
+          <p class="text-muted">Collaborate securely and get quality work delivered on time.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="text-center mt-5">
       <% if (!user) { %>
-        <a class="btn btn-primary btn-lg me-2" href="/auth/register" role="button">Get Started</a>
-        <a class="btn btn-outline-primary btn-lg" href="/gigs" role="button">Browse Gigs</a>
+        <a href="/auth/register" class="btn btn-primary btn-lg me-2">Get Started Free</a>
+        <a href="/gigs" class="btn btn-outline-primary btn-lg">Browse Gigs</a>
       <% } else { %>
-        <a class="btn btn-primary btn-lg me-2" href="/gigs" role="button">Browse Gigs</a>
+        <a href="/gigs" class="btn btn-primary btn-lg me-2">Browse Gigs</a>
         <% if (user.role === 'freelancer' || user.role === 'both') { %>
-          <a class="btn btn-success btn-lg" href="/gigs/create" role="button">Post a Gig</a>
+          <a href="/gigs/create" class="btn btn-success btn-lg">Post a Gig</a>
         <% } %>
       <% } %>
     </div>
   </div>
+</section>
 
-  <section class="mt-5">
-    <h2 class="mb-4">How It Works</h2>
-    <div class="row">
-      <div class="col-md-4">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">1. Sign Up</h5>
-            <p class="card-text">Create your account as a freelancer, client, or both.</p>
-          </div>
+<!-- Stats Section -->
+<section class="stats-section py-5">
+  <div class="container">
+    <div class="row text-center">
+      <div class="col-md-4 mb-4 mb-md-0">
+        <div class="stat-item">
+          <h2 class="stat-number text-primary">500+</h2>
+          <p class="text-muted mb-0">Talented Freelancers</p>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4 mb-md-0">
+        <div class="stat-item">
+          <h2 class="stat-number text-primary">1,000+</h2>
+          <p class="text-muted mb-0">Services Available</p>
         </div>
       </div>
       <div class="col-md-4">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">2. Browse or Post</h5>
-            <p class="card-text">Browse available services or post your own gigs.</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">3. Get to Work</h5>
-            <p class="card-text">Place orders and collaborate on exciting projects.</p>
-          </div>
+        <div class="stat-item">
+          <h2 class="stat-number text-primary">98%</h2>
+          <p class="text-muted mb-0">Client Satisfaction</p>
         </div>
       </div>
     </div>
-  </section>
-</main>
+  </div>
+</section>
+
+<!-- Script to show/hide navbar search based on scroll -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const navbarSearch = document.getElementById('navbarSearch');
+  const heroSearch = document.querySelector('.hero-search');
+
+  if (navbarSearch && heroSearch) {
+    function checkScroll() {
+      const heroSearchRect = heroSearch.getBoundingClientRect();
+      const navbarHeight = document.querySelector('.navbar').offsetHeight || 70;
+
+      // Show navbar search when hero search is scrolled past the navbar
+      if (heroSearchRect.bottom < navbarHeight) {
+        navbarSearch.classList.add('visible');
+      } else {
+        navbarSearch.classList.remove('visible');
+      }
+    }
+
+    window.addEventListener('scroll', checkScroll);
+    checkScroll(); // Run on load
+  }
+});
+</script>
 
 <%- include('partials/footer') %>

@@ -1,7 +1,146 @@
- 
- 
- <!-- links to bootstrap and javascript file -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="/js/main.js"></script>
+<!-- Cookie Consent Banner -->
+<div id="cookieConsent" class="cookie-consent" style="display: none;">
+  <div class="container">
+    <div class="d-flex flex-column flex-md-row align-items-center justify-content-between">
+      <div class="cookie-text mb-3 mb-md-0">
+        <i class="bi bi-shield-lock me-2"></i>
+        <span>We use cookies to enhance your experience. By continuing to use this site, you agree to our use of cookies for session management and security.</span>
+        <a href="#" class="text-white ms-1" data-bs-toggle="modal" data-bs-target="#cookiePolicyModal">Learn more</a>
+      </div>
+      <div class="cookie-buttons">
+        <button id="acceptCookies" class="btn btn-light btn-sm me-2">Accept</button>
+        <button id="declineCookies" class="btn btn-outline-light btn-sm">Decline</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Cookie Policy Modal -->
+<div class="modal fade" id="cookiePolicyModal" tabindex="-1" aria-labelledby="cookiePolicyModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="cookiePolicyModalLabel">Cookie Policy</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <h6>What are cookies?</h6>
+        <p>Cookies are small text files stored on your device when you visit a website. They help the website remember your preferences and improve your experience.</p>
+
+        <h6>How we use cookies</h6>
+        <p>CareFreelancer uses cookies for:</p>
+        <ul>
+          <li><strong>Session Management:</strong> To keep you logged in and remember your preferences during your visit.</li>
+          <li><strong>Security:</strong> To protect against cross-site request forgery (CSRF) attacks.</li>
+          <li><strong>Remember Me:</strong> To keep you logged in for longer periods if you choose this option.</li>
+        </ul>
+
+        <h6>Your choices</h6>
+        <p>You can accept or decline cookies. If you decline, some features may not work properly (e.g., you won't be able to log in).</p>
+
+        <p class="text-muted small mb-0">This is an academic project for CCS2210 Web Programming at the University of York.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="site-footer bg-primary text-light pt-5 pb-3">
+  <div class="container">
+    <div class="row">
+
+      <!-- About Section -->
+      <div class="col-lg-4 col-md-6 mb-4">
+        <h5 class="text-white mb-3">CareFreelancer</h5>
+        <p class="text-light opacity-75">
+          A freelance marketplace connecting talented professionals with clients worldwide.
+          Find the perfect freelancer for your project or showcase your skills to a global audience.
+        </p>
+        <div class="social-links mt-3">
+          <a href="#" class="text-light opacity-75 me-3" aria-label="Facebook"><i class="bi bi-facebook fs-5"></i></a>
+          <a href="#" class="text-light opacity-75 me-3" aria-label="Twitter"><i class="bi bi-twitter-x fs-5"></i></a>
+          <a href="#" class="text-light opacity-75 me-3" aria-label="LinkedIn"><i class="bi bi-linkedin fs-5"></i></a>
+          <a href="#" class="text-light opacity-75" aria-label="Instagram"><i class="bi bi-instagram fs-5"></i></a>
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="col-lg-2 col-md-6 mb-4">
+        <h6 class="text-white mb-3">Quick Links</h6>
+        <ul class="list-unstyled footer-links">
+          <li><a href="/" class="text-light opacity-75">Home</a></li>
+          <li><a href="/gigs" class="text-light opacity-75">Browse Gigs</a></li>
+          <li><a href="/gigs/search" class="text-light opacity-75">Search</a></li>
+          <% if (!user) { %>
+            <li><a href="/auth/register" class="text-light opacity-75">Register</a></li>
+            <li><a href="/auth/login" class="text-light opacity-75">Login</a></li>
+          <% } %>
+        </ul>
+      </div>
+
+      <!-- Categories -->
+      <div class="col-lg-3 col-md-6 mb-4">
+        <h6 class="text-white mb-3">Categories</h6>
+        <ul class="list-unstyled footer-links">
+          <li><a href="/gigs/search?category=Web+Development" class="text-light opacity-75">Web Development</a></li>
+          <li><a href="/gigs/search?category=Graphic+Design" class="text-light opacity-75">Graphic Design</a></li>
+          <li><a href="/gigs/search?category=Writing+%26+Translation" class="text-light opacity-75">Writing & Translation</a></li>
+          <li><a href="/gigs/search?category=Digital+Marketing" class="text-light opacity-75">Digital Marketing</a></li>
+          <li><a href="/gigs/search?category=Video+%26+Animation" class="text-light opacity-75">Video & Animation</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact / Academic Info -->
+      <div class="col-lg-3 col-md-6 mb-4">
+        <h6 class="text-white mb-3">Academic Project</h6>
+        <ul class="list-unstyled text-muted">
+          <li class="mb-2">
+            <i class="bi bi-mortarboard me-2"></i>University of York
+          </li>
+          <li class="mb-2">
+            <i class="bi bi-book me-2"></i>CCS2210 Web Programming
+          </li>
+          <li class="mb-2">
+            <i class="bi bi-envelope me-2"></i>
+            <a href="mailto:info@carefreelancer.example" class="text-light opacity-75">info@carefreelancer.example</a>
+          </li>
+          <li>
+            <i class="bi bi-geo-alt me-2"></i>York, United Kingdom
+          </li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- Divider -->
+    <hr class="border-light my-4 opacity-25">
+
+    <!-- Bottom Footer -->
+    <div class="row align-items-center">
+      <div class="col-md-6 text-center text-md-start">
+        <p class="text-light opacity-75 mb-0">
+          &copy; <span id="currentYear"></span> CareFreelancer. All rights reserved.
+        </p>
+      </div>
+      <div class="col-md-6 text-center text-md-end">
+        <ul class="list-inline mb-0">
+          <li class="list-inline-item"><a href="#" class="text-light opacity-75 small">Privacy Policy</a></li>
+          <li class="list-inline-item"><span class="text-light opacity-75">|</span></li>
+          <li class="list-inline-item"><a href="#" class="text-light opacity-75 small">Terms of Service</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Script to set current year dynamically -->
+<script>document.getElementById('currentYear').textContent = new Date().getFullYear();</script>
+
+<!-- Links to Bootstrap and JavaScript file -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/main.js"></script>
 </body>
 </html>

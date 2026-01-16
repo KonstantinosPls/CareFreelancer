@@ -48,7 +48,8 @@ const authLimiter = rateLimit({
   handler: (req, res) => {
     res.status(429).render('429', {
       title: 'Too Many Requests',
-      message: 'Too many login attempts. Please try again after 15 minutes.'
+      message: 'Too many login attempts. Please try again after 15 minutes.',
+      user: req.session?.user || null
     });
   }
 });

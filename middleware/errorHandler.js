@@ -125,7 +125,8 @@ const errorHandler = (err, req, res, next) => {
     statusCode,
     message,
     errors,
-    error: process.env.NODE_ENV === 'development' ? err : {}
+    error: process.env.NODE_ENV === 'development' ? err : {},
+    user: req.session?.user || null
   });
 };
 
@@ -135,7 +136,8 @@ const errorHandler = (err, req, res, next) => {
 const notFoundHandler = (req, res, next) => {
   res.status(404).render('404', {
     title: 'Page Not Found - CareFreelancer',
-    message: `The page '${req.originalUrl}' could not be found`
+    message: `The page '${req.originalUrl}' could not be found`,
+    user: req.session?.user || null
   });
 };
 

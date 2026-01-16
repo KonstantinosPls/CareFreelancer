@@ -50,7 +50,7 @@ router.get('/', async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).render('500', { title: 'Server Error', error: {} });
+    res.status(500).render('500', { title: 'Server Error', error: {}, user: req.session?.user || null });
   }
 });
 
@@ -116,7 +116,26 @@ router.get('/search', async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).render('500', { title: 'Server Error', error: {} });
+    res.status(500).render('500', { title: 'Server Error', error: {}, user: req.session?.user || null });
+  }
+});
+
+// GET /gigs/my-gigs - Show user's own gigs
+router.get('/my-gigs', isAuthenticated, async (req, res) => {
+  try {
+    const gigs = await Gig.find({
+      freelancerId: req.session.user._id,
+      status: { $ne: 'deleted' }
+    }).sort({ createdAt: -1 });
+
+    res.render('gigs/list', {
+      title: 'My Gigs',
+      gigs: gigs,
+      isMyGigs: true
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).render('500', { title: 'Server Error', error: {}, user: req.session?.user || null });
   }
 });
 
@@ -195,7 +214,7 @@ router.post('/', isAuthenticated, upload.array('images', 5), gigValidation, asyn
     res.redirect('/gigs/create');
   } catch (error) {
     console.error(error);
-    res.status(500).render('500', { title: 'Server Error', error: {} });
+    res.status(500).render('500', { title: 'Server Error', error: {}, user: req.session?.user || null });
   }
 });
 
@@ -206,7 +225,7 @@ router.get('/:id', async (req, res) => {
       .populate('freelancerId', 'username email bio');
 
     if (!gig) {
-      return res.status(404).render('404', { title: 'Gig Not Found' });
+      return res.status(404).render('404', { title: 'Gig Not Found', user: req.session?.user || null });
     }
 
     // Check if current user owns this gig
@@ -220,7 +239,7 @@ router.get('/:id', async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).render('500', { title: 'Server Error', error: {} });
+    res.status(500).render('500', { title: 'Server Error', error: {}, user: req.session?.user || null });
   }
 });
 
@@ -230,14 +249,15 @@ router.get('/:id/edit', isAuthenticated, async (req, res) => {
     const gig = await Gig.findById(req.params.id);
 
     if (!gig) {
-      return res.status(404).render('404', { title: 'Gig Not Found' });
+      return res.status(404).render('404', { title: 'Gig Not Found', user: req.session?.user || null });
     }
 
     // Check if user owns this gig
     if (gig.freelancerId.toString() !== req.session.user._id.toString()) {
       return res.status(403).render('403', {
         title: 'Unauthorized - CareFreelancer',
-        message: 'You do not have permission to modify this gig.'
+        message: 'You do not have permission to modify this gig.',
+        user: req.session?.user || null
       });
     }
 
@@ -247,7 +267,7 @@ router.get('/:id/edit', isAuthenticated, async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).render('500', { title: 'Server Error', error: {} });
+    res.status(500).render('500', { title: 'Server Error', error: {}, user: req.session?.user || null });
   }
 });
 
@@ -257,14 +277,15 @@ router.put('/:id', isAuthenticated, upload.array('images', 5), gigValidation, as
     const gig = await Gig.findById(req.params.id);
 
     if (!gig) {
-      return res.status(404).render('404', { title: 'Gig Not Found' });
+      return res.status(404).render('404', { title: 'Gig Not Found', user: req.session?.user || null });
     }
 
     // Check if user owns this gig
     if (gig.freelancerId.toString() !== req.session.user._id.toString()) {
       return res.status(403).render('403', {
         title: 'Unauthorized - CareFreelancer',
-        message: 'You do not have permission to modify this gig.'
+        message: 'You do not have permission to modify this gig.',
+        user: req.session?.user || null
       });
     }
 
@@ -316,7 +337,7 @@ router.put('/:id', isAuthenticated, upload.array('images', 5), gigValidation, as
     res.redirect('/gigs/' + gig._id);
   } catch (error) {
     console.error(error);
-    res.status(500).render('500', { title: 'Server Error', error: {} });
+    res.status(500).render('500', { title: 'Server Error', error: {}, user: req.session?.user || null });
   }
 });
 
@@ -326,14 +347,15 @@ router.delete('/:id', isAuthenticated, async (req, res) => {
     const gig = await Gig.findById(req.params.id);
 
     if (!gig) {
-      return res.status(404).render('404', { title: 'Gig Not Found' });
+      return res.status(404).render('404', { title: 'Gig Not Found', user: req.session?.user || null });
     }
 
     // Check if user owns this gig
     if (gig.freelancerId.toString() !== req.session.user._id.toString()) {
       return res.status(403).render('403', {
         title: 'Unauthorized - CareFreelancer',
-        message: 'You do not have permission to modify this gig.'
+        message: 'You do not have permission to modify this gig.',
+        user: req.session?.user || null
       });
     }
 
@@ -344,7 +366,7 @@ router.delete('/:id', isAuthenticated, async (req, res) => {
     res.redirect('/gigs');
   } catch (error) {
     console.error(error);
-    res.status(500).render('500', { title: 'Server Error', error: {} });
+    res.status(500).render('500', { title: 'Server Error', error: {}, user: req.session?.user || null });
   }
 });
 

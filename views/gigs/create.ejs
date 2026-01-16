@@ -39,8 +39,7 @@
           <% } %>
 
 
-              <form action="/gigs" method="POST" enctype="multipart/form-data" id="gigForm">
-                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <form action="/gigs?_csrf=<%= csrfToken %>" method="POST" enctype="multipart/form-data" id="gigForm">
 
                 <!-- Gig Title -->
                 <div class="mb-3">

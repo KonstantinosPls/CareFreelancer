@@ -21,12 +21,14 @@ const csrfProtection = (req, res, next) => {
   }
 
   // For POST/PUT/DELETE, validate the token
-  const token = req.body._csrf || req.headers['x-csrf-token'];
+  // Check body, headers, and query params (query needed for multipart forms)
+  const token = req.body._csrf || req.headers['x-csrf-token'] || req.query._csrf;
 
   if (!token || token !== req.session.csrfToken) {
     return res.status(403).render('403', {
       title: 'Forbidden',
-      message: 'Invalid or missing CSRF token. Please try again.'
+      message: 'Invalid or missing CSRF token. Please try again.',
+      user: req.session?.user || null
     });
   }
 

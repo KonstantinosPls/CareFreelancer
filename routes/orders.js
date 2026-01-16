@@ -16,7 +16,8 @@ router.post('/', isAuthenticated, isClient, async (req, res) => {
     if (!gigId) {
       return res.status(400).render('400', {
         title: 'Bad Request - CareFreelancer',
-        message: 'Missing gig ID. Please select a gig to order.'
+        message: 'Missing gig ID. Please select a gig to order.',
+        user: req.session?.user || null
       });
     }
 
@@ -24,13 +25,15 @@ router.post('/', isAuthenticated, isClient, async (req, res) => {
     if (!gig || gig.status === 'deleted') {
       return res.status(404).render('404', {
         title: 'Not Found - CareFreelancer',
-        message: 'This gig is no longer available.'
+        message: 'This gig is no longer available.',
+        user: req.session?.user || null
       });
     }
     if (!requirements || requirements.trim().length < 10) {
       return res.status(400).render('400', {
         title: 'Bad Request - CareFreelancer',
-        message: 'Requirements must be at least 10 characters long. Please describe what you need from the freelancer.'
+        message: 'Requirements must be at least 10 characters long. Please describe what you need from the freelancer.',
+        user: req.session?.user || null
       });
     }
 
@@ -53,7 +56,7 @@ router.post('/', isAuthenticated, isClient, async (req, res) => {
 
   } catch (err) {
     console.error('Order creation failed:', err);
-    res.status(500).render('500', { title: 'Server Error' });
+    res.status(500).render('500', { title: 'Server Error', user: req.session?.user || null });
   }
 });
 
@@ -72,7 +75,7 @@ router.get('/client', isAuthenticated, isClient, async (req, res) => {
     });
   } catch (err) {
     console.error('Client orders error:', err);
-    return res.status(500).render('500', { title: 'Server Error' });
+    return res.status(500).render('500', { title: 'Server Error', user: req.session?.user || null });
   }
 });
 
@@ -91,7 +94,7 @@ router.get('/freelancer', isAuthenticated, isFreelancer, async (req, res) => {
     });
   } catch (err) {
     console.error('Freelancer orders error:', err);
-    return res.status(500).render('500', { title: 'Server Error' });
+    return res.status(500).render('500', { title: 'Server Error', user: req.session?.user || null });
   }
 });
 
@@ -107,7 +110,7 @@ router.get('/:id', isAuthenticated, async (req, res) => {
       .lean();
 
     if (!order) {
-      return res.status(404).render('404', { title: 'Order Not Found' });
+      return res.status(404).render('404', { title: 'Order Not Found', user: req.session?.user || null });
     }
 
     const isClientUser =
@@ -118,7 +121,8 @@ router.get('/:id', isAuthenticated, async (req, res) => {
     if (!isClientUser && !isFreelancerUser) {
       return res.status(403).render('403', {
         title: 'Access Denied - CareFreelancer',
-        message: 'You can only view orders you are involved in.'
+        message: 'You can only view orders you are involved in.',
+        user: req.session?.user || null
       });
     }
 
@@ -128,7 +132,7 @@ router.get('/:id', isAuthenticated, async (req, res) => {
     });
   } catch (err) {
     console.error('Order details error:', err);
-    return res.status(500).render('500', { title: 'Server Error' });
+    return res.status(500).render('500', { title: 'Server Error', user: req.session?.user || null });
   }
 });
 
@@ -140,7 +144,7 @@ router.patch('/:id', isAuthenticated, async (req, res) => {
 
     const order = await Order.findById(req.params.id);
     if (!order) {
-      return res.status(404).render('404', { title: 'Order Not Found' });
+      return res.status(404).render('404', { title: 'Order Not Found', user: req.session?.user || null });
     }
 
     const isClientUser = order.clientId.toString() === user._id.toString();
@@ -150,7 +154,8 @@ router.patch('/:id', isAuthenticated, async (req, res) => {
     if (!isClientUser && !isFreelancerUser) {
       return res.status(403).render('403', {
         title: 'Access Denied - CareFreelancer',
-        message: 'You can only modify orders you are involved in.'
+        message: 'You can only modify orders you are involved in.',
+        user: req.session?.user || null
       });
     }
 
@@ -159,13 +164,15 @@ router.patch('/:id', isAuthenticated, async (req, res) => {
       if (!isClientUser) {
         return res.status(403).render('403', {
           title: 'Access Denied - CareFreelancer',
-          message: 'Only the client can cancel this order.'
+          message: 'Only the client can cancel this order.',
+          user: req.session?.user || null
         });
       }
       if (order.status !== 'pending') {
         return res.status(400).render('400', {
           title: 'Bad Request - CareFreelancer',
-          message: 'Only pending orders can be cancelled. This order is already ' + order.status + '.'
+          message: 'Only pending orders can be cancelled. This order is already ' + order.status + '.',
+          user: req.session?.user || null
         });
       }
 
@@ -179,13 +186,15 @@ router.patch('/:id', isAuthenticated, async (req, res) => {
       if (!isFreelancerUser) {
         return res.status(403).render('403', {
           title: 'Access Denied - CareFreelancer',
-          message: 'Only the freelancer can start this order.'
+          message: 'Only the freelancer can start this order.',
+          user: req.session?.user || null
         });
       }
       if (order.status !== 'pending') {
         return res.status(400).render('400', {
           title: 'Bad Request - CareFreelancer',
-          message: 'Only pending orders can be started. This order is already ' + order.status + '.'
+          message: 'Only pending orders can be started. This order is already ' + order.status + '.',
+          user: req.session?.user || null
         });
       }
 
@@ -198,13 +207,15 @@ router.patch('/:id', isAuthenticated, async (req, res) => {
       if (!isFreelancerUser) {
         return res.status(403).render('403', {
           title: 'Access Denied - CareFreelancer',
-          message: 'Only the freelancer can complete this order.'
+          message: 'Only the freelancer can complete this order.',
+          user: req.session?.user || null
         });
       }
       if (order.status !== 'in-progress') {
         return res.status(400).render('400', {
           title: 'Bad Request - CareFreelancer',
-          message: 'Only in-progress orders can be completed. This order is currently ' + order.status + '.'
+          message: 'Only in-progress orders can be completed. This order is currently ' + order.status + '.',
+          user: req.session?.user || null
         });
       }
 
@@ -216,11 +227,12 @@ router.patch('/:id', isAuthenticated, async (req, res) => {
 
     return res.status(400).render('400', {
       title: 'Bad Request - CareFreelancer',
-      message: 'Invalid action. Please use the provided buttons to update order status.'
+      message: 'Invalid action. Please use the provided buttons to update order status.',
+      user: req.session?.user || null
     });
   } catch (err) {
     console.error('Update order status error:', err);
-    return res.status(500).render('500', { title: 'Server Error' });
+    return res.status(500).render('500', { title: 'Server Error', user: req.session?.user || null });
   }
 });
 

@@ -1,6 +1,60 @@
 
 document.addEventListener('DOMContentLoaded', function () {
-  //removing alerts after 5 seconds for ui cleanliness
+  // Cookie consent banner
+  const cookieConsent = document.getElementById('cookieConsent');
+  const acceptBtn = document.getElementById('acceptCookies');
+  const declineBtn = document.getElementById('declineCookies');
+
+  if (cookieConsent) {
+    // Check if user has already made a choice
+    const cookieChoice = localStorage.getItem('cookieConsent');
+
+    if (!cookieChoice) {
+      // Show banner if no choice has been made
+      cookieConsent.style.display = 'block';
+    }
+
+    // Accept cookies
+    if (acceptBtn) {
+      acceptBtn.addEventListener('click', function () {
+        localStorage.setItem('cookieConsent', 'accepted');
+        cookieConsent.style.display = 'none';
+      });
+    }
+
+    // Decline cookies
+    if (declineBtn) {
+      declineBtn.addEventListener('click', function () {
+        localStorage.setItem('cookieConsent', 'declined');
+        cookieConsent.style.display = 'none';
+      });
+    }
+  }
+
+  // Search form validation - prevent empty searches
+  const searchForms = document.querySelectorAll('.search-form');
+  searchForms.forEach(function (form) {
+    form.addEventListener('submit', function (e) {
+      const searchInput = form.querySelector('input[name="q"]');
+      if (searchInput && !searchInput.value.trim()) {
+        e.preventDefault();
+        searchInput.focus();
+        searchInput.classList.add('is-invalid');
+      }
+    });
+
+    // Remove invalid state when user starts typing
+    const searchInput = form.querySelector('input[name="q"]');
+    if (searchInput) {
+      searchInput.addEventListener('input', function () {
+        if (this.value.trim()) {
+          this.classList.remove('is-invalid');
+        }
+      });
+    }
+  });
+
+  // Removing alerts after 5 seconds for UI cleanliness
   const alerts = document.querySelectorAll('.alert');
   alerts.forEach(function (alert) {
     setTimeout(function () {

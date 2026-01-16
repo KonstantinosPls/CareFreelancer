@@ -1,0 +1,28 @@
+# Dependencies - will be installed fresh in container
+node_modules
+
+# Git files - not needed in container
+.git
+.gitignore
+
+# Environment file - we'll pass env vars differently in Docker
+.env
+
+# Development/IDE files
+*.log
+.vscode
+.idea
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Documentation and screenshots
+*.md
+*.pdf
+*.png
+*.jpg
+!public/**
+
+# Test files (if any)
+*.test.js

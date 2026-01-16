@@ -8,13 +8,14 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
 
-    <!-- Search bar (Phase 4 - UI only) -->
-      <form class="d-flex me-4" action="/gigs/search" method="GET">
+    <!-- Search bar - hidden on homepage until user scrolls -->
+      <form class="d-flex me-4 navbar-search search-form" id="navbarSearch" action="/gigs/search" method="GET">
       <input
         class="form-control me-2"
         type="search"
         name="q"
-      placeholder="Search Gigs...">
+        placeholder="Search Gigs..."
+        required>
         <button class="btn btn-outline-light" type="submit">
           Search
         </button>
