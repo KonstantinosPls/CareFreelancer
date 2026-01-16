@@ -12,8 +12,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }, 5000);
   });
 
-  //print for debugging will remove when completed
-  console.log('CareFreelancer loaded successfully');
 
   // Gig form validation
   const gigForm = document.getElementById('gigForm');

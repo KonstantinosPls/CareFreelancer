@@ -14,14 +14,10 @@ mongoose.connect(process.env.MONGODB_URI)
     .catch(err => console.error('MongoDB connection error:', err));
 
 /**
- * Copy sample images to uploads folder
- * This ensures teammates have the same demo images when they run the seed
+ * Setup upload directories
  */
-const setupSampleImages = () => {
-    const sampleDir = path.join(__dirname, 'public', 'sample-images');
+const setupDirectories = () => {
     const uploadsDir = path.join(__dirname, 'public', 'uploads');
-
-    // Create upload directories if they don't exist
     const dirs = [
         path.join(uploadsDir, 'profiles'),
         path.join(uploadsDir, 'gigs')
@@ -33,66 +29,27 @@ const setupSampleImages = () => {
             console.log(`Created directory: ${dir}`);
         }
     });
-
-    // Copy sample profile images
-    const profileSampleDir = path.join(sampleDir, 'profiles');
-    const profileUploadDir = path.join(uploadsDir, 'profiles');
-
-    if (fs.existsSync(profileSampleDir)) {
-        const profileImages = fs.readdirSync(profileSampleDir);
-        profileImages.forEach(img => {
-            const src = path.join(profileSampleDir, img);
-            const dest = path.join(profileUploadDir, img);
-            if (!fs.existsSync(dest)) {
-                fs.copyFileSync(src, dest);
-                console.log(`Copied profile image: ${img}`);
-            }
-        });
-    }
-
-    // Copy sample gig images
-    const gigSampleDir = path.join(sampleDir, 'gigs');
-    const gigUploadDir = path.join(uploadsDir, 'gigs');
-
-    if (fs.existsSync(gigSampleDir)) {
-        const gigImages = fs.readdirSync(gigSampleDir);
-        gigImages.forEach(img => {
-            const src = path.join(gigSampleDir, img);
-            const dest = path.join(gigUploadDir, img);
-            if (!fs.existsSync(dest)) {
-                fs.copyFileSync(src, dest);
-                console.log(`Copied gig image: ${img}`);
-            }
-        });
-    }
 };
 
 /**
- * Check if a sample image exists, return path or placeholder
+ * Get placeholder image for gig
  */
-const getImagePath = (type, filename) => {
-    const localPath = `/uploads/${type}/${filename}`;
-    const fullPath = path.join(__dirname, 'public', localPath);
+const getGigImage = (gigNumber) => {
+    return `https://picsum.photos/seed/gig${gigNumber}/600/400`;
+};
 
-    if (fs.existsSync(fullPath)) {
-        return localPath;
-    }
-
-    // Return placeholder image URLs if local images don't exist
-    // These are free placeholder services that work without setup
-    if (type === 'profiles') {
-        return `https://ui-avatars.com/api/?name=${filename.replace('.jpg', '')}&background=0d6efd&color=fff&size=200`;
-    } else {
-        // Placeholder for gig images
-        return `https://picsum.photos/seed/${filename}/600/400`;
-    }
+/**
+ * Get profile image placeholder
+ */
+const getProfileImage = (name) => {
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0d6efd&color=fff&size=200`;
 };
 
 const seedDatabase = async () => {
     try {
-        // Setup sample images first
-        console.log('Setting up sample images...');
-        setupSampleImages();
+        // Setup directories
+        console.log('Setting up directories...');
+        setupDirectories();
 
         // Clear existing data
         console.log('\nClearing existing data...');
@@ -100,276 +57,438 @@ const seedDatabase = async () => {
         await Gig.deleteMany({});
         await Order.deleteMany({});
 
-        // Create users
+        // Create users - 8 freelancers + 2 clients
         console.log('Creating users...');
         const hashedPassword = await bcrypt.hash('password123', 10);
 
         const users = await User.insertMany([
+            // Web Developers
             {
-                username: 'john_dev',
-                email: 'john@example.com',
+                username: 'alex_webdev',
+                email: 'alex@example.com',
                 password: hashedPassword,
                 role: 'freelancer',
-                bio: 'Full-stack web developer with 5 years of experience',
-                skills: ['JavaScript', 'Node.js', 'React', 'MongoDB'],
-                profileImage: getImagePath('profiles', 'john.jpg'),
+                bio: 'Senior full-stack developer with 7 years experience in React, Node.js and cloud technologies.',
+                skills: ['JavaScript', 'React', 'Node.js', 'MongoDB', 'AWS'],
+                profileImage: getProfileImage('Alex Turner'),
                 isEmailVerified: true
             },
             {
-                username: 'jane_designer',
-                email: 'jane@example.com',
+                username: 'emma_frontend',
+                email: 'emma@example.com',
                 password: hashedPassword,
                 role: 'freelancer',
-                bio: 'Creative graphic designer specializing in branding',
-                skills: ['Photoshop', 'Illustrator', 'Figma'],
-                profileImage: getImagePath('profiles', 'jane.jpg'),
+                bio: 'Frontend specialist creating beautiful, accessible user interfaces.',
+                skills: ['HTML/CSS', 'JavaScript', 'React', 'Vue.js', 'Tailwind'],
+                profileImage: getProfileImage('Emma Wilson'),
+                isEmailVerified: true
+            },
+            // Graphic Designers
+            {
+                username: 'sophia_design',
+                email: 'sophia@example.com',
+                password: hashedPassword,
+                role: 'freelancer',
+                bio: 'Creative designer with a passion for branding and visual identity.',
+                skills: ['Photoshop', 'Illustrator', 'Figma', 'Brand Design'],
+                profileImage: getProfileImage('Sophia Martinez'),
                 isEmailVerified: true
             },
             {
-                username: 'mike_writer',
-                email: 'mike@example.com',
+                username: 'james_creative',
+                email: 'james@example.com',
                 password: hashedPassword,
                 role: 'freelancer',
-                bio: 'Professional content writer and translator',
-                skills: ['Content Writing', 'SEO', 'Translation'],
-                profileImage: getImagePath('profiles', 'mike.jpg'),
+                bio: 'Award-winning graphic designer specializing in UI/UX and print media.',
+                skills: ['UI Design', 'Print Design', 'Adobe Creative Suite'],
+                profileImage: getProfileImage('James Brown'),
+                isEmailVerified: true
+            },
+            // Writers & Translators
+            {
+                username: 'olivia_writer',
+                email: 'olivia@example.com',
+                password: hashedPassword,
+                role: 'freelancer',
+                bio: 'Professional content writer with expertise in SEO and copywriting.',
+                skills: ['Content Writing', 'SEO', 'Copywriting', 'Blogging'],
+                profileImage: getProfileImage('Olivia Davis'),
                 isEmailVerified: true
             },
             {
-                username: 'sarah_marketer',
-                email: 'sarah@example.com',
+                username: 'lucas_translator',
+                email: 'lucas@example.com',
                 password: hashedPassword,
                 role: 'freelancer',
-                bio: 'Digital marketing expert with proven ROI',
-                skills: ['SEO', 'Social Media', 'Google Ads'],
-                profileImage: getImagePath('profiles', 'sarah.jpg'),
+                bio: 'Certified translator fluent in 5 languages with 10 years experience.',
+                skills: ['Translation', 'Localization', 'Proofreading'],
+                profileImage: getProfileImage('Lucas Garcia'),
                 isEmailVerified: true
             },
+            // Digital Marketers
             {
-                username: 'tom_client',
-                email: 'tom@example.com',
+                username: 'mia_marketing',
+                email: 'mia@example.com',
+                password: hashedPassword,
+                role: 'freelancer',
+                bio: 'Digital marketing strategist helping businesses grow online.',
+                skills: ['SEO', 'Google Ads', 'Social Media Marketing'],
+                profileImage: getProfileImage('Mia Johnson'),
+                isEmailVerified: true
+            },
+            // Video & Animation
+            {
+                username: 'noah_video',
+                email: 'noah@example.com',
+                password: hashedPassword,
+                role: 'freelancer',
+                bio: 'Video producer and animator creating engaging visual content.',
+                skills: ['Video Editing', 'Motion Graphics', 'After Effects'],
+                profileImage: getProfileImage('Noah Anderson'),
+                isEmailVerified: true
+            },
+            // Clients
+            {
+                username: 'client_david',
+                email: 'david@example.com',
                 password: hashedPassword,
                 role: 'client',
-                bio: 'Looking for quality freelancers',
-                profileImage: getImagePath('profiles', 'tom.jpg'),
+                bio: 'Startup founder looking for talented freelancers.',
+                profileImage: getProfileImage('David Miller'),
+                isEmailVerified: true
+            },
+            {
+                username: 'client_rachel',
+                email: 'rachel@example.com',
+                password: hashedPassword,
+                role: 'client',
+                bio: 'Small business owner seeking quality digital services.',
+                profileImage: getProfileImage('Rachel White'),
                 isEmailVerified: true
             }
         ]);
 
         console.log(`Created ${users.length} users`);
 
-        // Create gigs with sample images
-        console.log('Creating gigs...');
+        // Get user references by specialty
+        const webDev1 = users[0]; // alex
+        const webDev2 = users[1]; // emma
+        const designer1 = users[2]; // sophia
+        const designer2 = users[3]; // james
+        const writer = users[4]; // olivia
+        const translator = users[5]; // lucas
+        const marketer = users[6]; // mia
+        const videoCreator = users[7]; // noah
+        const client1 = users[8]; // david
+        const client2 = users[9]; // rachel
+
+        // Create 20 gigs - 4 per category
+        console.log('Creating gigs');
         const gigs = await Gig.insertMany([
+            // ============ WEB DEVELOPMENT (4 gigs) ============
             {
-                title: 'I will create a professional React website',
-                description: 'I will develop a modern, responsive website using React.js, Node.js, and MongoDB. The website will be fully responsive, SEO-friendly, and optimized for performance.',
+                title: 'I will build a professional React website',
+                description: 'I will develop a modern, responsive website using React.js with clean code and best practices. Includes responsive design, SEO optimization, and fast loading speeds. Perfect for businesses looking for a professional web presence.',
                 category: 'Web Development',
-                price: 250,
+                price: 299,
                 deliveryTime: 7,
-                freelancerId: users[0]._id,
-                tags: ['React', 'Node.js', 'JavaScript'],
-                images: [getImagePath('gigs', 'react-website.jpg')],
+                freelancerId: webDev1._id,
+                tags: ['React', 'JavaScript', 'Node.js'],
+                images: [getGigImage(1)],
                 status: 'active'
             },
             {
-                title: 'I will design your company logo and branding',
-                description: 'Professional logo design service with unlimited revisions until you are 100% satisfied. I will create a unique, memorable logo that represents your brand perfectly.',
-                category: 'Graphic Design',
-                price: 150,
-                deliveryTime: 5,
-                freelancerId: users[1]._id,
-                tags: ['Logo Design', 'Branding'],
-                images: [getImagePath('gigs', 'logo-design.jpg')],
-                status: 'active'
-            },
-            {
-                title: 'I will build a full-stack e-commerce website',
-                description: 'Complete e-commerce solution with shopping cart, payment integration, user authentication, and admin panel. Built with modern technologies for scalability.',
+                title: 'I will create a full-stack e-commerce store',
+                description: 'Complete e-commerce solution with shopping cart, secure payment integration (Stripe/PayPal), user authentication, product management, and admin dashboard. Built with Node.js and MongoDB for scalability.',
                 category: 'Web Development',
-                price: 500,
+                price: 599,
                 deliveryTime: 14,
-                freelancerId: users[0]._id,
+                freelancerId: webDev1._id,
                 tags: ['Node.js', 'React', 'HTML/CSS'],
-                images: [getImagePath('gigs', 'ecommerce.jpg')],
+                images: [getGigImage(2)],
                 status: 'active'
             },
             {
-                title: 'I will write SEO-optimized blog posts',
-                description: 'High-quality, engaging blog content optimized for search engines. Every article is researched, well-structured, and tailored to your target audience.',
-                category: 'Writing & Translation',
-                price: 80,
+                title: 'I will design and code a landing page',
+                description: 'High-converting landing page with modern design, smooth animations, and mobile-first approach. Optimized for speed and conversions. Includes contact form integration and analytics setup.',
+                category: 'Web Development',
+                price: 149,
                 deliveryTime: 3,
-                freelancerId: users[2]._id,
-                tags: ['SEO', 'Content Writing'],
-                images: [getImagePath('gigs', 'blog-writing.jpg')],
+                freelancerId: webDev2._id,
+                tags: ['HTML/CSS', 'JavaScript'],
+                images: [getGigImage(3)],
                 status: 'active'
             },
             {
-                title: 'I will manage your social media accounts',
-                description: 'Complete social media management including content creation, posting schedule, engagement, and monthly analytics reports. Grow your online presence!',
-                category: 'Digital Marketing',
-                price: 300,
-                deliveryTime: 30,
-                freelancerId: users[3]._id,
-                tags: ['Social Media', 'Content Creation'],
-                images: [getImagePath('gigs', 'social-media.jpg')],
+                title: 'I will build a custom WordPress website',
+                description: 'Professional WordPress website with custom theme, responsive design, and essential plugins. Includes SEO setup, security hardening, and training on how to manage your content.',
+                category: 'Web Development',
+                price: 249,
+                deliveryTime: 5,
+                freelancerId: webDev2._id,
+                tags: ['HTML/CSS', 'JavaScript'],
+                images: [getGigImage(4)],
+                status: 'active'
+            },
+
+            // ============ GRAPHIC DESIGN (4 gigs) ============
+            {
+                title: 'I will design a unique logo for your brand',
+                description: 'Custom logo design that captures your brand essence. You will receive multiple concepts, unlimited revisions, and final files in all formats (AI, EPS, PNG, JPG, PDF). Perfect for startups and rebranding.',
+                category: 'Graphic Design',
+                price: 129,
+                deliveryTime: 4,
+                freelancerId: designer1._id,
+                tags: ['Logo Design', 'Branding'],
+                images: [getGigImage(5)],
                 status: 'active'
             },
             {
                 title: 'I will create stunning UI/UX designs',
-                description: 'Modern, user-friendly UI/UX designs for web and mobile applications. Includes wireframes, mockups, and interactive prototypes.',
+                description: 'Modern, user-centered UI/UX design for web and mobile apps. Includes user research, wireframes, high-fidelity mockups, and interactive prototypes in Figma. Design that converts visitors to customers.',
                 category: 'Graphic Design',
-                price: 200,
+                price: 349,
                 deliveryTime: 7,
-                freelancerId: users[1]._id,
-                tags: ['UI Design', 'UX Design', 'Figma'],
-                images: [getImagePath('gigs', 'ui-ux.jpg')],
+                freelancerId: designer1._id,
+                tags: ['UI Design', 'UX Design'],
+                images: [getGigImage(6)],
                 status: 'active'
             },
             {
-                title: 'I will develop a REST API with Node.js',
-                description: 'Build a robust, scalable REST API using Node.js, Express, and MongoDB. Includes authentication, error handling, and documentation.',
-                category: 'Web Development',
-                price: 180,
+                title: 'I will design business cards and stationery',
+                description: 'Professional business card design with matching stationery (letterhead, envelope). Print-ready files with bleed marks. Multiple design options and unlimited revisions included.',
+                category: 'Graphic Design',
+                price: 79,
+                deliveryTime: 2,
+                freelancerId: designer2._id,
+                tags: ['Print Design', 'Branding'],
+                images: [getGigImage(7)],
+                status: 'active'
+            },
+            {
+                title: 'I will create social media graphics pack',
+                description: 'Complete social media branding kit with templates for Instagram, Facebook, Twitter, and LinkedIn. Includes 20 customizable templates, story templates, and highlight covers.',
+                category: 'Graphic Design',
+                price: 199,
                 deliveryTime: 5,
-                freelancerId: users[0]._id,
-                tags: ['Node.js', 'JavaScript', 'API'],
-                images: [getImagePath('gigs', 'api-dev.jpg')],
+                freelancerId: designer2._id,
+                tags: ['Social Media', 'Branding'],
+                images: [getGigImage(8)],
                 status: 'active'
             },
+
+            // ============ WRITING & TRANSLATION (4 gigs) ============
             {
-                title: 'I will translate your content to 5 languages',
-                description: 'Professional translation services for English, Spanish, French, German, and Italian. Native speaker quality with cultural adaptation.',
+                title: 'I will write SEO blog posts that rank',
+                description: 'Well-researched, engaging blog posts optimized for search engines. Each article includes keyword research, meta descriptions, and internal linking suggestions. Drive organic traffic to your site.',
                 category: 'Writing & Translation',
-                price: 120,
-                deliveryTime: 4,
-                freelancerId: users[2]._id,
-                tags: ['Translation', 'Languages'],
-                images: [getImagePath('gigs', 'translation.jpg')],
-                status: 'active'
-            },
-            {
-                title: 'I will run Google Ads campaigns for your business',
-                description: 'Expert Google Ads campaign management to maximize your ROI. Includes keyword research, ad creation, and monthly optimization.',
-                category: 'Digital Marketing',
-                price: 400,
-                deliveryTime: 30,
-                freelancerId: users[3]._id,
-                tags: ['Google Ads', 'PPC', 'Marketing'],
-                images: [getImagePath('gigs', 'google-ads.jpg')],
-                status: 'active'
-            },
-            {
-                title: 'I will create responsive landing pages',
-                description: 'High-converting landing pages built with HTML, CSS, and JavaScript. Mobile-friendly, fast-loading, and optimized for conversions.',
-                category: 'Web Development',
-                price: 150,
-                deliveryTime: 4,
-                freelancerId: users[0]._id,
-                tags: ['HTML/CSS', 'JavaScript', 'Landing Page'],
-                images: [getImagePath('gigs', 'landing-page.jpg')],
-                status: 'active'
-            },
-            {
-                title: 'I will design business cards and flyers',
-                description: 'Professional print-ready designs for business cards, flyers, and brochures. Multiple concepts provided with unlimited revisions.',
-                category: 'Graphic Design',
-                price: 100,
+                price: 89,
                 deliveryTime: 3,
-                freelancerId: users[1]._id,
-                tags: ['Print Design', 'Business Cards'],
-                images: [getImagePath('gigs', 'print-design.jpg')],
+                freelancerId: writer._id,
+                tags: ['SEO', 'Content Writing'],
+                images: [getGigImage(9)],
                 status: 'active'
             },
             {
-                title: 'I will write technical documentation',
-                description: 'Clear, comprehensive technical documentation for software products. Includes API docs, user guides, and installation instructions.',
+                title: 'I will write compelling website copy',
+                description: 'Persuasive website copywriting that converts visitors into customers. Includes homepage, about page, services page, and CTA optimization. Research-backed copy that speaks to your audience.',
                 category: 'Writing & Translation',
-                price: 200,
-                deliveryTime: 7,
-                freelancerId: users[2]._id,
-                tags: ['Technical Writing', 'Documentation'],
-                images: [getImagePath('gigs', 'tech-docs.jpg')],
+                price: 199,
+                deliveryTime: 5,
+                freelancerId: writer._id,
+                tags: ['Copywriting', 'Content Writing'],
+                images: [getGigImage(10)],
                 status: 'active'
             },
             {
-                title: 'I will optimize your website for SEO',
-                description: 'Complete SEO optimization including on-page SEO, technical SEO, keyword research, and competitor analysis. Improve your search rankings!',
+                title: 'I will translate English to Spanish professionally',
+                description: 'Accurate, natural-sounding translation from English to Spanish by native speaker. Specialized in business, legal, and marketing content. Includes proofreading and cultural adaptation.',
+                category: 'Writing & Translation',
+                price: 59,
+                deliveryTime: 2,
+                freelancerId: translator._id,
+                tags: ['Translation', 'Spanish'],
+                images: [getGigImage(11)],
+                status: 'active'
+            },
+            {
+                title: 'I will translate documents to French or German',
+                description: 'Professional translation services for French and German. Certified translator with 10+ years experience. Perfect for legal documents, technical manuals, and marketing materials.',
+                category: 'Writing & Translation',
+                price: 79,
+                deliveryTime: 3,
+                freelancerId: translator._id,
+                tags: ['Translation', 'French', 'German'],
+                images: [getGigImage(12)],
+                status: 'active'
+            },
+
+            // ============ DIGITAL MARKETING (4 gigs) ============
+            {
+                title: 'I will create a complete SEO strategy',
+                description: 'Comprehensive SEO audit and strategy for your website. Includes technical SEO analysis, keyword research, competitor analysis, and a 90-day action plan to improve your rankings.',
                 category: 'Digital Marketing',
-                price: 350,
-                deliveryTime: 10,
-                freelancerId: users[3]._id,
-                tags: ['SEO', 'Website Optimization'],
-                images: [getImagePath('gigs', 'seo.jpg')],
+                price: 299,
+                deliveryTime: 7,
+                freelancerId: marketer._id,
+                tags: ['SEO', 'Marketing Strategy'],
+                images: [getGigImage(13)],
                 status: 'active'
             },
             {
-                title: 'I will build a mobile-responsive portfolio website',
-                description: 'Showcase your work with a stunning portfolio website. Includes gallery, contact form, and blog section. Fully responsive and SEO-optimized.',
-                category: 'Web Development',
-                price: 220,
-                deliveryTime: 6,
-                freelancerId: users[0]._id,
-                tags: ['HTML/CSS', 'JavaScript', 'Portfolio'],
-                images: [getImagePath('gigs', 'portfolio.jpg')],
+                title: 'I will manage your Google Ads campaigns',
+                description: 'Expert Google Ads management to maximize your ROI. Includes campaign setup, keyword optimization, A/B testing, and detailed monthly reports. Get more leads for less spend.',
+                category: 'Digital Marketing',
+                price: 399,
+                deliveryTime: 30,
+                freelancerId: marketer._id,
+                tags: ['Google Ads', 'PPC'],
+                images: [getGigImage(14)],
                 status: 'active'
             },
             {
-                title: 'I will create animated explainer videos',
-                description: 'Engaging 2D animated explainer videos for your business. Includes script writing, voiceover, and background music.',
+                title: 'I will grow your Instagram organically',
+                description: 'Strategic Instagram growth service with content planning, hashtag strategy, engagement tactics, and analytics tracking. Real followers interested in your niche, no bots or fake accounts.',
+                category: 'Digital Marketing',
+                price: 179,
+                deliveryTime: 30,
+                freelancerId: marketer._id,
+                tags: ['Social Media', 'Instagram'],
+                images: [getGigImage(15)],
+                status: 'active'
+            },
+            {
+                title: 'I will setup email marketing automation',
+                description: 'Complete email marketing setup with Mailchimp or ConvertKit. Includes welcome sequence, lead magnets, newsletter templates, and segmentation strategy to nurture your audience.',
+                category: 'Digital Marketing',
+                price: 249,
+                deliveryTime: 5,
+                freelancerId: marketer._id,
+                tags: ['Email Marketing', 'Automation'],
+                images: [getGigImage(16)],
+                status: 'active'
+            },
+
+            // ============ VIDEO & ANIMATION (4 gigs) ============
+            {
+                title: 'I will create a professional explainer video',
+                description: '60-90 second animated explainer video for your product or service. Includes script writing, professional voiceover, background music, and unlimited revisions. Engage your audience visually.',
                 category: 'Video & Animation',
-                price: 450,
+                price: 499,
                 deliveryTime: 10,
-                freelancerId: users[1]._id,
-                tags: ['Animation', 'Video Production'],
-                images: [getImagePath('gigs', 'animation.jpg')],
+                freelancerId: videoCreator._id,
+                tags: ['Animation', 'Explainer Video'],
+                images: [getGigImage(17)],
+                status: 'active'
+            },
+            {
+                title: 'I will edit your YouTube videos professionally',
+                description: 'Professional video editing for YouTubers and content creators. Includes color grading, sound design, motion graphics, thumbnails, and end screens. Make your content stand out.',
+                category: 'Video & Animation',
+                price: 149,
+                deliveryTime: 3,
+                freelancerId: videoCreator._id,
+                tags: ['Video Editing', 'YouTube'],
+                images: [getGigImage(18)],
+                status: 'active'
+            },
+            {
+                title: 'I will create logo animation intro',
+                description: 'Eye-catching logo animation for your brand. Perfect for YouTube intros, presentations, and social media. Multiple styles available: minimal, 3D, particle effects, and more.',
+                category: 'Video & Animation',
+                price: 99,
+                deliveryTime: 2,
+                freelancerId: videoCreator._id,
+                tags: ['Animation', 'Logo Animation'],
+                images: [getGigImage(19)],
+                status: 'active'
+            },
+            {
+                title: 'I will produce promotional video ads',
+                description: 'High-converting video ads for Facebook, Instagram, and TikTok. Includes scripting, editing, captions, and multiple aspect ratios for all platforms. Drive sales with video.',
+                category: 'Video & Animation',
+                price: 279,
+                deliveryTime: 5,
+                freelancerId: videoCreator._id,
+                tags: ['Video Production', 'Advertising'],
+                images: [getGigImage(20)],
                 status: 'active'
             }
         ]);
 
         console.log(`Created ${gigs.length} gigs`);
 
-        // Create some sample orders
+        // Create sample orders
         console.log('Creating orders...');
         const orders = await Order.insertMany([
             {
                 gigId: gigs[0]._id,
-                clientId: users[4]._id,
-                freelancerId: users[0]._id,
+                clientId: client1._id,
+                freelancerId: webDev1._id,
                 status: 'in-progress',
                 totalPrice: gigs[0].price,
-                requirements: 'Need a website for my startup. Looking for modern design with user authentication.',
+                requirements: 'Need a React website for my tech startup. Should have modern design with dark mode option.',
                 deliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
                 orderDate: new Date()
             },
             {
-                gigId: gigs[1]._id,
-                clientId: users[4]._id,
-                freelancerId: users[1]._id,
+                gigId: gigs[4]._id,
+                clientId: client1._id,
+                freelancerId: designer1._id,
                 status: 'completed',
-                totalPrice: gigs[1].price,
-                requirements: 'Logo for a tech startup. Prefer modern, minimalist style.',
+                totalPrice: gigs[4].price,
+                requirements: 'Logo for a fintech startup called "PayFlow". Modern, trustworthy look.',
                 deliveryDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-                orderDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+                orderDate: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000),
                 completedDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)
+            },
+            {
+                gigId: gigs[8]._id,
+                clientId: client2._id,
+                freelancerId: writer._id,
+                status: 'pending',
+                totalPrice: gigs[8].price,
+                requirements: 'Need 5 blog posts about sustainable fashion. Target audience: millennials.',
+                deliveryDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+                orderDate: new Date()
+            },
+            {
+                gigId: gigs[16]._id,
+                clientId: client2._id,
+                freelancerId: videoCreator._id,
+                status: 'in-progress',
+                totalPrice: gigs[16].price,
+                requirements: 'Explainer video for our SaaS product. Should be 90 seconds with professional voiceover.',
+                deliveryDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
+                orderDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)
             }
         ]);
 
         console.log(`Created ${orders.length} orders`);
 
-        console.log('\n✅ Database seeded successfully!');
-        console.log('\n📸 Note: Images are using placeholder URLs.');
-        console.log('   To use custom images, add them to:');
-        console.log('   - public/sample-images/profiles/ (for profile photos)');
-        console.log('   - public/sample-images/gigs/ (for gig images)');
-        console.log('   Then re-run: node seed.js\n');
-        console.log('Test accounts (password: password123):');
-        console.log('- john@example.com (freelancer)');
-        console.log('- jane@example.com (freelancer)');
-        console.log('- mike@example.com (freelancer)');
-        console.log('- sarah@example.com (freelancer)');
-        console.log('- tom@example.com (client)');
+        console.log('\n========================================');
+        console.log('DATABASE SEEDED SUCCESSFULLY!');
+        console.log('========================================\n');
+
+        console.log('Summary:');
+        console.log(`   - ${users.length} users (8 freelancers + 2 clients)`);
+        console.log(`   - ${gigs.length} gigs (4 per category)`);
+        console.log(`   - ${orders.length} sample orders\n`);
+
+        console.log('Test Accounts (password: password123):');
+        console.log('   FREELANCERS:');
+        console.log('   - alex@example.com (Web Developer)');
+        console.log('   - emma@example.com (Frontend Dev)');
+        console.log('   - sophia@example.com (Designer)');
+        console.log('   - james@example.com (Designer)');
+        console.log('   - olivia@example.com (Writer)');
+        console.log('   - lucas@example.com (Translator)');
+        console.log('   - mia@example.com (Marketer)');
+        console.log('   - noah@example.com (Video Creator)');
+        console.log('   ');
+        console.log('   CLIENTS:');
+        console.log('   - david@example.com');
+        console.log('   - rachel@example.com\n');
 
         process.exit(0);
     } catch (error) {
