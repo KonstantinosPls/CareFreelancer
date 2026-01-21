@@ -3,40 +3,40 @@ services:
 
   # Service 1: MongoDB Database
   mongo:
-    image: mongo:7.0                    # Use official MongoDB image
-    container_name: carefreelancer-db   # Name for the container
-    restart: unless-stopped             # Auto-restart if it crashes
+    image: mongo:7.0                    
+    container_name: carefreelancer-db   
+    restart: unless-stopped             
     volumes:
-      - mongo_data:/data/db             # Persist data even if container is deleted
+      - mongo_data:/data/db             
     networks:
-      - app-network                     # Connect to our private network
+      - app-network                     
 
   # Service 2: Our Node.js Application
   app:
-    build: .                            # Build from Dockerfile in current directory
-    container_name: carefreelancer-app  # Name for the container
-    restart: unless-stopped             # Auto-restart if it crashes
+    build: .                            
+    container_name: carefreelancer-app  
+    restart: unless-stopped             
     ports:
-      - "3000:3000"                     # Map host port 3000 to container port 3000
-    environment:                        # Environment variables (instead of .env file)
+      - "3000:3000"                     
+    environment:                        
       - NODE_ENV=development
       - PORT=3000
       - MONGODB_URI=mongodb://mongo:27017/carefreelancer
-      - SESSION_SECRET=your-super-secret-session-key-change-this
+      - SESSION_SECRET=carefreelancer-ccs2210-athtech-2026-session-key
       - SMTP_HOST=sandbox.smtp.mailtrap.io
       - SMTP_PORT=2525
-      - SMTP_USER=cfff645aafcccf
-      - SMTP_PASS=9f2293b303dc8d
+      - SMTP_USER=062653182c0dfc
+      - SMTP_PASS=0af5bcdb178286
       - SMTP_FROM=noreply@carefreelancer.example
       - APP_URL=http://localhost:3000
     depends_on:
-      - mongo                           # Wait for MongoDB to start first
+      - mongo                          
     networks:
-      - app-network                     # Same network as MongoDB
+      - app-network                     
 
 # Define persistent storage
 volumes:
-  mongo_data:                           # Named volume for MongoDB data
+  mongo_data:                         
 
 # Define private network for containers to communicate
 networks:
